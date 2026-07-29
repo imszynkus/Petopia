@@ -736,3 +736,111 @@ body {
     filter: grayscale(0.5);
     opacity: 0.8;
 }
+
+/* --- TARCZA KOŁA DLA 6 NAGRÓD (60 DEG) --- */
+.wheel-outer-container {
+    position: relative;
+    width: 260px;
+    height: 260px;
+    margin: 15px auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.wheel-arrow {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 24px;
+    color: #e74c3c;
+    z-index: 10;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.wheel-spinner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 5px solid #2f3542;
+    overflow: hidden;
+    transition: transform 4s cubic-bezier(0.15, 0.9, 0.15, 1);
+}
+
+.wheel-slice {
+    position: absolute;
+    width: 50%;
+    height: 50%;
+    background: var(--clr);
+    transform-origin: 100% 100%;
+    transform: rotate(calc(60deg * var(--i)));
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wheel-slice span {
+    position: absolute;
+    left: 20px;
+    top: 40px;
+    transform: rotate(30deg);
+    font-size: 11px;
+    font-weight: bold;
+    color: #fff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    white-space: nowrap;
+}
+
+.wheel-center-cap {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    background: #fff;
+    border: 3px solid #2f3542;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #f1c40f;
+    z-index: 5;
+}
+3. Zaktualizowane startSpin() w script.js
+Ta funkcja obsługuje Twoją oryginalną tablicę WHEEL_REWARDS z wagami procentowymi oraz obraca tarczę dokładnie na wylosowane pole:
+
+JavaScript
+function startSpin() {
+    if (isSpinning) return;
+    
+    const spinBtn = document.getElementById('spin-btn');
+    const wheel = document.getElementById('wheel');
+
+    isSpinning = true;
+    if (spinBtn) spinBtn.disabled = true;
+
+    // Losowanie wg Twoich szans procentowych (wypada 1 obiekt z WHEEL_REWARDS)
+    const selectedReward = getRandomWeightedReward();
+
+    // Obrót: minimum 5 pełnych obrotów + cofnięcie o kąt danej nagrody, by trafiła w strzałkę u góry
+    const extraRounds = (5 + Math.floor(Math.random() * 3)) * 360;
+    const finalRotation = extraRounds + (360 - selectedReward.deg);
+
+    if (wheel) {
+        wheel.style.transform = `rotate(${finalRotation}deg)`;
+    }
+
+    triggerHaptic('light');
+
+    setTimeout(() => {
+        isSpinning = false;
+        lastSpinTime = Date.now();
+        localStorage.setItem('petopia_last_spin', lastSpinTime);
+
+        // Przyznanie Twojej nagrody i aktualizacja interfejsu
+        applySpinReward(selectedReward);
+        updateBadgeTimerUI();
+    }, 4000);
+}
