@@ -95,6 +95,7 @@ body {
     border-radius: 16px;
     margin-top: 15px;
     backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
 }
 
 .counter-text {
@@ -237,7 +238,7 @@ body {
 .tab-content h2 {
     margin-top: 20px;
     margin-bottom: 15px;
-    color: #FFFFFF;
+    color: #ffffff;
     font-size: 22px;
     text-align: center;
 }
@@ -248,7 +249,7 @@ body {
 }
 
 /* ==========================================
-   6. ZAKŁADKA UPGRADES (NAPRAWIONY FLEXBOX)
+   6. ZAKŁADKA UPGRADES
    ========================================== */
 .upgrades-view {
     padding: 10px 15px 90px 15px;
@@ -261,7 +262,7 @@ body {
 
 .upgrades-view h2 {
     margin-top: 10px;
-    color: #fff;
+    color: #ffffff;
     font-size: 1.5rem;
 }
 
@@ -279,7 +280,7 @@ body {
 }
 
 .upgrade-card {
-    background: #1E2640;
+    background: #1e2640;
     border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 18px;
     padding: 16px;
@@ -303,7 +304,7 @@ body {
 .upgrade-info h4 {
     margin: 0;
     font-size: 1rem;
-    color: #fff;
+    color: #ffffff;
     font-weight: 700;
 }
 
@@ -323,7 +324,7 @@ body {
 
 .buy-upgrade-btn {
     background: #22c55e;
-    color: #fff;
+    color: #ffffff;
     border: none;
     border-radius: 12px;
     padding: 10px 16px;
@@ -360,7 +361,7 @@ body {
 
 .shop-item, 
 .mission-item {
-    background: #1E2640;
+    background: #1e2640;
     border-radius: 16px;
     padding: 14px 18px;
     display: flex;
@@ -385,18 +386,18 @@ body {
 .shop-info h3 {
     margin: 0 0 4px 0;
     font-size: 15px;
-    color: #FFF;
+    color: #ffffff;
 }
 
 .shop-info p {
     margin: 0;
     font-size: 12px;
-    color: #A0A5BA;
+    color: #a0a5ba;
 }
 
 .buy-btn {
-    background: #2D3748;
-    color: #FFD700;
+    background: #2d3748;
+    color: #ffd700;
     border: 1px solid rgba(255, 215, 0, 0.3);
     font-weight: 700;
     padding: 8px 14px;
@@ -408,7 +409,7 @@ body {
 }
 
 .claim-mission-btn {
-    background: linear-gradient(135deg, #4ADE80, #22C55E);
+    background: linear-gradient(135deg, #4ade80, #22c55e);
     color: #0c101d;
     border: none;
     font-weight: 700;
@@ -420,8 +421,8 @@ body {
 
 .claim-mission-btn.completed,
 .claim-mission-btn.disabled {
-    background: #2D3748;
-    color: #A0A5BA;
+    background: #2d3748;
+    color: #a0a5ba;
     opacity: 0.6;
     cursor: default;
 }
@@ -429,7 +430,7 @@ body {
 .reward-tag {
     font-size: 0.85rem;
     font-weight: 700;
-    color: #00FF88;
+    color: #00ff88;
 }
 
 /* ==========================================
@@ -445,7 +446,7 @@ body {
 }
 
 .pet-card {
-    background: #1E2640;
+    background: #1e2640;
     border-radius: 18px;
     padding: 16px 12px;
     display: flex;
@@ -465,13 +466,13 @@ body {
 .pet-card-name {
     font-size: 15px;
     font-weight: 700;
-    color: #FFF;
+    color: #ffffff;
     margin-bottom: 4px;
 }
 
 .badge-max {
     background: rgba(255, 215, 0, 0.15);
-    color: #FFD700;
+    color: #ffd700;
     font-size: 10px;
     font-weight: 800;
     padding: 3px 8px;
@@ -482,12 +483,12 @@ body {
 .pet-level {
     font-size: 12px;
     font-weight: 700;
-    color: #4ADE80;
+    color: #4ade80;
 }
 
 .pet-shards {
     font-size: 11px;
-    color: #A0A5BA;
+    color: #a0a5ba;
     margin-bottom: 10px;
 }
 
@@ -496,8 +497,8 @@ body {
     padding: 8px 0;
     border-radius: 10px;
     border: none;
-    background: #2D3748;
-    color: #FFF;
+    background: #2d3748;
+    color: #ffffff;
     font-size: 12px;
     font-weight: 700;
     cursor: pointer;
@@ -505,8 +506,8 @@ body {
 }
 
 .equip-btn.active {
-    background: #4ADE80;
-    color: #0C101D;
+    background: #4ade80;
+    color: #0c101d;
 }
 
 /* ==========================================
@@ -521,6 +522,7 @@ body {
     height: 100vh;
     background: rgba(12, 16, 29, 0.85);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     justify-content: center;
     align-items: center;
     z-index: 2000;
@@ -529,7 +531,7 @@ body {
 }
 
 .modal-card {
-    background: #1E2640;
+    background: #1e2640;
     border: 2px solid #22c55e;
     border-radius: 24px;
     padding: 24px;
@@ -552,13 +554,13 @@ body {
 .pet-name {
     font-size: 20px;
     font-weight: 700;
-    color: #FFF;
+    color: #ffffff;
     margin-bottom: 6px;
 }
 
 .badge {
     background: rgba(74, 222, 128, 0.15);
-    color: #4ADE80;
+    color: #4ade80;
     font-size: 11px;
     font-weight: 700;
     padding: 4px 10px;
@@ -567,7 +569,7 @@ body {
 }
 
 .pet-stats {
-    color: #A0A5BA;
+    color: #a0a5ba;
     font-size: 13px;
     margin-bottom: 18px;
 }
@@ -575,10 +577,10 @@ body {
 .claim-btn {
     width: 100%;
     padding: 14px;
-    background: linear-gradient(135deg, #4ADE80, #22C55E);
+    background: linear-gradient(135deg, #4ade80, #22c55e);
     border: none;
     border-radius: 14px;
-    color: #0C101D;
+    color: #0c101d;
     font-weight: 800;
     font-size: 15px;
     cursor: pointer;
@@ -610,12 +612,13 @@ body {
 
 .toast {
     background: rgba(20, 25, 40, 0.95);
-    color: #fff;
+    color: #ffffff;
     padding: 12px 18px;
     border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.15);
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     font-size: 0.9rem;
     font-weight: 600;
     text-align: center;
@@ -633,7 +636,7 @@ body {
 }
 
 /* ==========================================
-   11. DOLNE MENU NAVIGACJI (BOTTOM NAVBAR)
+   11. DOLNE MENU NAWIGACJI (BOTTOM NAVBAR)
    ========================================== */
 .bottom-nav {
     position: fixed;
@@ -645,6 +648,7 @@ body {
     height: 70px;
     background-color: rgba(23, 29, 45, 0.92);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     display: flex;
     justify-content: space-around;
@@ -662,7 +666,7 @@ body {
     align-items: center;
     justify-content: center;
     gap: 4px;
-    color: #6C7289;
+    color: #6c7289;
     font-size: 11px;
     font-weight: 600;
     cursor: pointer;
@@ -677,13 +681,18 @@ body {
 }
 
 .nav-btn.active {
-    color: #4ADE80;
+    color: #4ade80;
 }
 
 .nav-btn.active .nav-icon {
     transform: translateY(-2px) scale(1.1);
 }
 
+/* ==========================================
+   12. KOŁO FORTUNY (DAILY SPIN WIDGET)
+   ========================================== */
+
+/* Pływająca ikona otwierająca koło */
 .spin-floating-badge {
     position: fixed;
     left: 15px;
@@ -699,6 +708,7 @@ body {
     padding: 8px 10px;
     border-radius: 16px;
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
     transition: transform 0.15s ease, border-color 0.2s;
 }
@@ -711,7 +721,7 @@ body {
     width: 44px;
     height: 44px;
     object-fit: contain;
-    filter: drop-shadow(0 2px 5px rgba(0,0,0,0.3));
+    filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
 }
 
 .spin-badge-timer {
@@ -723,7 +733,6 @@ body {
     letter-spacing: 0.5px;
 }
 
-/* Kiedy koło jest zablokowane (timer odlicza) */
 .spin-floating-badge.disabled {
     border-color: rgba(255, 255, 255, 0.2);
 }
@@ -737,110 +746,85 @@ body {
     opacity: 0.8;
 }
 
-/* --- TARCZA KOŁA DLA 6 NAGRÓD (60 DEG) --- */
+/* Kontener tarczy koła */
 .wheel-outer-container {
     position: relative;
     width: 260px;
     height: 260px;
-    margin: 15px auto;
+    margin: 20px auto;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+/* Czerwona strzałka u góry koła */
 .wheel-arrow {
     position: absolute;
-    top: -12px;
+    top: -14px;
     left: 50%;
     transform: translateX(-50%);
-    font-size: 24px;
-    color: #e74c3c;
-    z-index: 10;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    width: 0;
+    height: 0;
+    border-left: 14px solid transparent;
+    border-right: 14px solid transparent;
+    border-top: 22px solid #ef4444;
+    z-index: 20;
+    filter: drop-shadow(0px 3px 5px rgba(0, 0, 0, 0.5));
 }
 
+/* Obrotowa tarcza */
 .wheel-spinner {
     position: relative;
     width: 100%;
     height: 100%;
     border-radius: 50%;
-    border: 5px solid #2f3542;
+    border: 6px solid #1e293b;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
     overflow: hidden;
     transition: transform 4s cubic-bezier(0.15, 0.9, 0.15, 1);
 }
 
+/* Wycinek koła (6 sekcji po 60deg) */
 .wheel-slice {
     position: absolute;
     width: 50%;
     height: 50%;
+    top: 0;
+    right: 0;
     background: var(--clr);
-    transform-origin: 100% 100%;
+    transform-origin: 0% 100%;
     transform: rotate(calc(60deg * var(--i)));
     clip-path: polygon(0 0, 100% 0, 100% 100%);
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
+/* Tekst nagrody w wycinku */
 .wheel-slice span {
     position: absolute;
     left: 20px;
-    top: 40px;
+    bottom: 25px;
+    transform-origin: 0 100%;
     transform: rotate(30deg);
     font-size: 11px;
-    font-weight: bold;
-    color: #fff;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
     white-space: nowrap;
+    pointer-events: none;
 }
 
+/* Środkowy kapsel (cap) */
 .wheel-center-cap {
     position: absolute;
-    width: 40px;
-    height: 40px;
-    background: #fff;
-    border: 3px solid #2f3542;
+    width: 44px;
+    height: 44px;
+    background: #ffffff;
+    border: 4px solid #1e293b;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 18px;
-    color: #f1c40f;
-    z-index: 5;
-}
-3. Zaktualizowane startSpin() w script.js
-Ta funkcja obsługuje Twoją oryginalną tablicę WHEEL_REWARDS z wagami procentowymi oraz obraca tarczę dokładnie na wylosowane pole:
-
-JavaScript
-function startSpin() {
-    if (isSpinning) return;
-    
-    const spinBtn = document.getElementById('spin-btn');
-    const wheel = document.getElementById('wheel');
-
-    isSpinning = true;
-    if (spinBtn) spinBtn.disabled = true;
-
-    // Losowanie wg Twoich szans procentowych (wypada 1 obiekt z WHEEL_REWARDS)
-    const selectedReward = getRandomWeightedReward();
-
-    // Obrót: minimum 5 pełnych obrotów + cofnięcie o kąt danej nagrody, by trafiła w strzałkę u góry
-    const extraRounds = (5 + Math.floor(Math.random() * 3)) * 360;
-    const finalRotation = extraRounds + (360 - selectedReward.deg);
-
-    if (wheel) {
-        wheel.style.transform = `rotate(${finalRotation}deg)`;
-    }
-
-    triggerHaptic('light');
-
-    setTimeout(() => {
-        isSpinning = false;
-        lastSpinTime = Date.now();
-        localStorage.setItem('petopia_last_spin', lastSpinTime);
-
-        // Przyznanie Twojej nagrody i aktualizacja interfejsu
-        applySpinReward(selectedReward);
-        updateBadgeTimerUI();
-    }, 4000);
+    color: #f59e0b;
+    z-index: 10;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
