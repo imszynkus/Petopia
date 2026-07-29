@@ -38,8 +38,9 @@ const REFILL_REGEN_TIME = 12 * 60 * 60 * 1000; // 12 godzin
 let lastSpinTime = parseInt(localStorage.getItem('petopia_last_spin')) || 0;
 let isSpinning = false;
 let spinTimerInterval = null;
+let currentWheelRotation = 0; // Przechowuje aktualny obrót koła
 
-// Pula nagród z dokładnymi szansami % (Suma = 100%)
+// Pula nagród z dokładnymi szansami % (Suma = 100%) - 6 SEKCJI PO 60 DEG
 const WHEEL_REWARDS = [
     { name: "Legendarne Jajko", type: "egg_legendary", val: "legendary", deg: 0,   chance: 0.1 },
     { name: "1000 Monet",       type: "coins",         val: 1000,        deg: 60,  chance: 8.4 },
@@ -639,7 +640,6 @@ function buyRegenSpeedUpgrade() {
 
 // 14. LOGIKA DAILY SPIN (PŁYWAJĄCA IKONA + TIMER 24H)
 function initSpinWheel() {
-    // Użycie zdarzenia globalnego sprawia, że kliknięcia działają natychmiast po wygenerowaniu elementów
     document.addEventListener('click', (e) => {
         const spinBadgeBtn = e.target.closest('#spin-badge-btn');
         const closeSpinBtn = e.target.closest('#close-spin-btn');
@@ -723,18 +723,34 @@ function getRandomWeightedReward() {
 
 function startSpin() {
     if (isSpinning) return;
+    
+    // Sprawdź cooldown 24h
+    const now = Date.now();
+    if (now - lastSpinTime < 24 * 60 * 60 * 1000) {
+        showToast("⏳ Koło fortuny jest jeszcze zablokowane!");
+        return;
+    }
+
     const spinBtn = document.getElementById('spin-btn');
     const wheel = document.getElementById('wheel');
 
     isSpinning = true;
     if (spinBtn) spinBtn.disabled = true;
 
+    // Losowanie nagrody wg określonych wag %
     const selectedReward = getRandomWeightedReward();
-    const extraRounds = (5 + Math.floor(Math.random() * 5)) * 360;
-    const finalRotation = extraRounds + selectedReward.deg;
+
+    // DOKŁADNA MATEMATYKA OBROTU:
+    // Wycinek ma 60 deg, jego środek przypada na +30 deg.
+    // Aby wycinek o wybranym deg wylądował pod górną strzałką (0 deg), obracamy o (360 - deg - 30).
+    const extraRounds = (5 + Math.floor(Math.random() * 3)) * 360;
+    const targetDeg = (360 - selectedReward.deg - 30 + 360) % 360;
+    
+    // Zapewnienie, że koło zawsze kręci się do przodu
+    currentWheelRotation += extraRounds + targetDeg - (currentWheelRotation % 360);
 
     if (wheel) {
-        wheel.style.transform = `rotate(${finalRotation}deg)`;
+        wheel.style.transform = `rotate(${currentWheelRotation}deg)`;
     }
 
     triggerHaptic('light');
