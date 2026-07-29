@@ -168,3 +168,128 @@ body {
     0% { transform: scale(0.5); opacity: 0; }
     100% { transform: scale(1); opacity: 1; }
 }
+
+/* ==========================================
+   STEROWANIE ZAKŁADKAMI (TABS MANAGEMENT)
+   ========================================== */
+
+/* Domyślnie ukrywamy WSZYSTKIE widoki */
+.tab-content {
+    display: none;
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 90px; /* Miejsce na dolny nawigacyjny pasek */
+    box-sizing: border-box;
+}
+
+/* Pokazujemy TYLKO aktywną zakładkę */
+.tab-content.active {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 0.2s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================================
+   STYLE DLA DOLNEGO MENU (BOTTOM NAVBAR)
+   ========================================== */
+
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    height: 70px;
+    background-color: rgba(23, 29, 45, 0.92);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    z-index: 1000;
+    padding-bottom: env(safe-area-inset-bottom); /* Dla iPhone'ów z paskiem na dole */
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    outline: none;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    color: #6C7289;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    height: 100%;
+}
+
+.nav-icon {
+    font-size: 20px;
+    transition: transform 0.2s ease;
+}
+
+/* AKTYWNY PRZYCISK W MENU */
+.nav-btn.active {
+    color: #4ADE80;
+}
+
+.nav-btn.active .nav-icon {
+    transform: translateY(-2px) scale(1.1);
+}
+
+/* ==========================================
+   STYLE DLA LISTY MISJI I SKLEPU (OPCJONALNIE)
+   ========================================== */
+
+.shop-list, .missions-list {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+.shop-item, .mission-item {
+    background: #1E2640;
+    border-radius: 16px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.claim-mission-btn {
+    background: linear-gradient(135deg, #4ADE80, #22C55E);
+    color: #0c101d;
+    border: none;
+    font-weight: 700;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.claim-mission-btn.completed {
+    background: #2D3748;
+    color: #718096;
+}
+
+.claim-mission-btn.disabled {
+    background: #2D3748;
+    color: #A0A5BA;
+    opacity: 0.6;
+}
