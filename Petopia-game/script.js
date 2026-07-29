@@ -19,6 +19,9 @@ let clicks = parseInt(localStorage.getItem('petopia_clicks')) || 0;
 let isHatched = localStorage.getItem('petopia_hatched') === 'true';
 let hasPet = localStorage.getItem('petopia_hasPet') === 'true';
 
+// Zapis ukończonych misji
+let completedMissions = JSON.parse(localStorage.getItem('petopia_missions')) || [];
+
 // Status Jajka ze sklepu
 let isEggActive = localStorage.getItem('petopia_is_egg_active') === 'true';
 let eggClicks = parseInt(localStorage.getItem('petopia_egg_clicks')) || 0;
@@ -95,6 +98,8 @@ function setupEventListeners() {
 
             if (targetTab === 'tab-collection') {
                 renderCollection();
+            } else if (targetTab === 'tab-missions') {
+                updateMissionsUI();
             }
         });
     });
@@ -111,11 +116,12 @@ function initGame() {
     } else if (isHatched) {
         showStarterReward();
     } else {
-        // Stan początkowy samouczka
         if (clicksDisplay) {
             clicksDisplay.innerHTML = `${clicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${TUTORIAL_TARGET}</span>`;
         }
     }
+
+    updateMissionsUI();
 }
 
 function getClickPower() {
@@ -151,15 +157,18 @@ function handleMainClick() {
     if (hasPet) {
         const power = getClickPower();
         coins += power;
+        clicks++; // Zliczamy też łączną liczbę kliknięć dla misji!
+        
         if (coinsDisplay) coinsDisplay.innerText = coins;
         localStorage.setItem('petopia_coins', coins);
+        localStorage.setItem('petopia_clicks', clicks);
 
         triggerHaptic();
         animateClick();
         return;
     }
 
-    // SCENARIUSZ C: Samouczek (Pierwsze jajko ze Slime)
+    // SCENARIUSZ C: Samouczek
     if (isHatched) return;
 
     clicks++;
@@ -249,7 +258,63 @@ function hatchShopEgg() {
     showActivePetInMainArea();
 }
 
-// 9. POMOCNICZE WIDOKI EKRANU GŁÓWNEGO
+// 9. OBSŁUGA MISJI (NEW)
+function updateMissionsUI() {
+    const m1Btn = document.getElementById('m1-btn');
+    const m2Btn = document.getElementById('m2-btn');
+
+    // MISJA 1: Hatch Starter Pet
+    if (m1Btn) {
+        if (completedMissions.includes(1)) {
+            m1Btn.innerText = "DONE ✅";
+            m1Btn.className = "claim-mission-btn disabled";
+            m1Btn.onclick = null;
+        } else if (hasPet) {
+            m1Btn.innerText = "CLAIM";
+            m1Btn.className = "claim-mission-btn";
+            m1Btn.onclick = () => claimMissionReward(1, 50);
+        } else {
+            m1Btn.innerText = "LOCKED";
+            m1Btn.className = "claim-mission-btn disabled";
+            m1Btn.onclick = null;
+        }
+    }
+
+    // MISJA 2: Reach 50 Taps
+    if (m2Btn) {
+        if (completedMissions.includes(2)) {
+            m2Btn.innerText = "DONE ✅";
+            m2Btn.className = "claim-mission-btn disabled";
+            m2Btn.onclick = null;
+        } else if (clicks >= 50) {
+            m2Btn.innerText = "CLAIM";
+            m2Btn.className = "claim-mission-btn";
+            m2Btn.onclick = () => claimMissionReward(2, 100);
+        } else {
+            m2Btn.innerText = `${clicks} / 50`;
+            m2Btn.className = "claim-mission-btn disabled";
+            m2Btn.onclick = null;
+        }
+    }
+}
+
+function claimMissionReward(missionId, rewardCoins) {
+    if (completedMissions.includes(missionId)) return;
+
+    coins += rewardCoins;
+    completedMissions.push(missionId);
+
+    localStorage.setItem('petopia_coins', coins);
+    localStorage.setItem('petopia_missions', JSON.stringify(completedMissions));
+
+    if (coinsDisplay) coinsDisplay.innerText = coins;
+
+    updateMissionsUI();
+    triggerHaptic();
+    showToast(`🎉 Mission completed! +${rewardCoins} 🪙`);
+}
+
+// 10. POMOCNICZE WIDOKI EKRANU GŁÓWNEGO
 function showEggInMainArea() {
     if (mainImg) mainImg.src = 'img/eggs/egg.png';
     if (statusSubtitle) statusSubtitle.innerText = 'Tap to hatch your Common Egg!';
@@ -286,6 +351,7 @@ function claimStarterPet() {
     activePetId = 'slime';
     localStorage.setItem('petopia_active_pet', 'slime');
     showActivePetInMainArea();
+    updateMissionsUI();
 }
 
 function switchTab(tabId) {
@@ -302,7 +368,7 @@ function switchTab(tabId) {
     if (tab) tab.classList.add('active');
 }
 
-// 10. RENDEROWANIE KOLEKCJI
+// 11. RENDEROWANIE KOLEKCJI
 function renderCollection() {
     if (!collectionGrid) return;
     collectionGrid.innerHTML = '';
