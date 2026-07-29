@@ -111,7 +111,7 @@ function initGame() {
     } else if (isHatched) {
         showStarterReward();
     } else {
-        // Stan poczatkowy samouczka
+        // Stan początkowy samouczka
         if (clicksDisplay) {
             clicksDisplay.innerHTML = `${clicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${TUTORIAL_TARGET}</span>`;
         }
@@ -243,16 +243,6 @@ function hatchShopEgg() {
     }
 
     localStorage.setItem('petopia_user_pets', JSON.stringify(userPets));
-    activePetId = randomPetId;
-    localStorage.setItem('petopia_active_pet', activePetId);
-
-    showActivePetInMainArea();
-}
-    }
-
-    localStorage.setItem('petopia_user_pets', JSON.stringify(userPets));
-    
-    // Ustawiamy wyklutego zwierzaka jako aktywnego
     activePetId = randomPetId;
     localStorage.setItem('petopia_active_pet', activePetId);
 
