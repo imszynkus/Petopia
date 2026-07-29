@@ -1,44 +1,59 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Petopia Mini App</title>
-    <!-- Telegram WebApp SDK -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <!-- Arkusz stylów CSS -->
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div class="header">
-        <h1 class="title">PETOPIA 🐾</h1>
-        <div class="subtitle">Klikaj jajko i kolekcjonuj potworki!</div>
-        
-        <div class="counter-card">
-            <div class="counter-text">Postęp samouczka</div>
-            <div class="counter-value"><span id="clicks">0</span> / <span id="target">10</span></div>
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="resource-card">
+            <span class="resource-icon">🪙</span>
+            <span class="resource-value" id="coins-display">0</span>
         </div>
     </div>
 
-    <div class="game-area">
-        <div class="egg-wrapper" id="egg-btn">
-            <div class="egg" id="egg">🥚</div>
-        </div>
-    </div>
+    <!-- DYNAMIC TABS CONTAINER -->
+    <div id="tab-home" class="tab-content active"></div>
+    <div id="tab-collection" class="tab-content"></div>
+    <div id="tab-shop" class="tab-content"></div>
+    <div id="tab-missions" class="tab-content"></div>
 
-    <!-- OKNO Z NAGRODĄ SLIME -->
-    <div class="reward-modal" id="reward-modal">
+    <!-- REWARD MODAL -->
+    <div class="reward-modal" id="reward-modal" style="display: none;">
         <div class="modal-card">
-            <div class="pet-avatar">🟢</div>
+            <img src="img/pets/slime.png" class="pet-img" alt="Starter Slime">
             <div class="pet-name">Starter Slime</div>
             <div class="badge">STARTER PET</div>
-            <div class="pet-stats">⚡ Dochód: +1 moneta / sekunda</div>
-            <button class="claim-btn" id="claim-btn">ODBIERZ STWORKA</button>
+            <div class="pet-stats">⚡ Value: +1 Coin / tap</div>
+            <button class="claim-btn" id="claim-btn">CLAIM PET</button>
         </div>
     </div>
 
-    <!-- Skrypt JavaScript -->
+    <!-- NAVBAR -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" data-tab="tab-home">
+            <span class="nav-icon">🏠</span>
+            <span class="nav-label">Home</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-collection">
+            <span class="nav-icon">🎒</span>
+            <span class="nav-label">Pets</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-shop">
+            <span class="nav-icon">🛒</span>
+            <span class="nav-label">Shop</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-missions">
+            <span class="nav-icon">🎯</span>
+            <span class="nav-label">Missions</span>
+        </button>
+    </nav>
+
     <script src="script.js"></script>
 </body>
 </html>
