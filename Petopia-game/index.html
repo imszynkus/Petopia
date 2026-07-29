@@ -9,9 +9,28 @@
 </head>
 <body>
 
+    <!-- PŁYWAJĄCA IKONA DAILY SPIN -->
     <div id="spin-badge-btn" class="spin-floating-badge">
-    <img src="img/roulette.png" alt="Daily Spin" class="spin-icon-img">
-    <span id="spin-badge-timer" class="spin-badge-timer">READY!</span>
+        <img src="img/roulette.png" alt="Daily Spin" class="spin-icon-img">
+        <span id="spin-badge-timer" class="spin-badge-timer">READY!</span>
+    </div>
+
+    <!-- MODAL KOŁA FORTUNY (DODANY BRAKUJĄCY KOD) -->
+    <div id="spin-modal" class="reward-modal" style="display: none;">
+        <div class="modal-card spin-modal-card">
+            <button id="close-spin-btn" class="close-modal-btn">✕</button>
+            <h3>Daily Spin 🎰</h3>
+            <p id="spin-timer-text">Zakręć kołem, aby wygrać darmowe nagrody!</p>
+            
+            <div class="wheel-outer-container">
+                <div class="wheel-arrow">▼</div>
+                <div id="wheel" class="wheel-spinner">
+                    <img src="img/roulette.png" alt="Wheel" class="wheel-img">
+                </div>
+            </div>
+
+            <button id="spin-btn" class="action-btn spin-action-btn">ZAKRĘĆ!</button>
+        </div>
     </div>
     
     <!-- GŁÓWNY GÓRNY PASEK Z MONETAMI -->
@@ -55,8 +74,8 @@
             <span class="nav-label">Shop</span>
         </button>
         <button class="nav-btn" data-tab="tab-upgrades">
-        <span class="nav-icon">⚡</span>
-        <span class="nav-label">Upgrades</span>
+            <span class="nav-icon">⚡</span>
+            <span class="nav-label">Upgrades</span>
         </button>
         <button class="nav-btn" data-tab="tab-missions">
             <span class="nav-icon">🎯</span>
