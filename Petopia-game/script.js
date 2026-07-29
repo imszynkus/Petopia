@@ -639,27 +639,29 @@ function buyRegenSpeedUpgrade() {
 
 // 14. LOGIKA DAILY SPIN (PŁYWAJĄCA IKONA + TIMER 24H)
 function initSpinWheel() {
-    const spinModal = document.getElementById('spin-modal');
-    const spinBadgeBtn = document.getElementById('spin-badge-btn');
-    const closeSpinBtn = document.getElementById('close-spin-btn');
-    const spinBtn = document.getElementById('spin-btn');
+    // Użycie zdarzenia globalnego sprawia, że kliknięcia działają natychmiast po wygenerowaniu elementów
+    document.addEventListener('click', (e) => {
+        const spinBadgeBtn = e.target.closest('#spin-badge-btn');
+        const closeSpinBtn = e.target.closest('#close-spin-btn');
+        const spinBtn = e.target.closest('#spin-btn');
+        const spinModal = document.getElementById('spin-modal');
 
-    if (spinBadgeBtn) {
-        spinBadgeBtn.addEventListener('click', () => {
+        if (spinBadgeBtn) {
             if (spinModal) spinModal.style.display = 'flex';
             checkSpinAvailability();
-        });
-    }
+            return;
+        }
 
-    if (closeSpinBtn) {
-        closeSpinBtn.addEventListener('click', () => {
+        if (closeSpinBtn) {
             if (spinModal) spinModal.style.display = 'none';
-        });
-    }
+            return;
+        }
 
-    if (spinBtn) {
-        spinBtn.addEventListener('click', startSpin);
-    }
+        if (spinBtn) {
+            startSpin();
+            return;
+        }
+    });
 
     startBadgeTimer();
 }
