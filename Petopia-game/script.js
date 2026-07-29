@@ -22,11 +22,32 @@ let clicks = parseInt(localStorage.getItem('petopia_clicks')) || 0;
 let isHatched = localStorage.getItem('petopia_hatched') === 'true';
 let hasPet = localStorage.getItem('petopia_hasPet') === 'true';
 
-// SYSTEM ENERGII (Z NAPRAWIONĄ REGENERACJĄ OFFLINE)
+// SYSTEM ENERGII
 let maxEnergy = parseInt(localStorage.getItem('petopia_max_energy')) || 1000;
 let energy = localStorage.getItem('petopia_energy') !== null ? parseInt(localStorage.getItem('petopia_energy')) : maxEnergy;
 let energyRechargeRate = parseInt(localStorage.getItem('petopia_energy_rate')) || 1; // 1 ⚡ / sek
 let lastEnergyUpdate = parseInt(localStorage.getItem('petopia_last_energy_update')) || Date.now();
+
+// SYSTEM STACKÓW FULL REFILL (Domyślnie 2/2 max)
+let fullRefillStacks = parseInt(localStorage.getItem('petopia_refill_stacks'));
+if (isNaN(fullRefillStacks)) fullRefillStacks = 2;
+let lastRefillRegenTime = parseInt(localStorage.getItem('petopia_last_refill_regen')) || Date.now();
+const REFILL_REGEN_TIME = 12 * 60 * 60 * 1000; // 12 godzin
+
+// SYSTEM KOŁA FORTUNY (DAILY SPIN)
+let lastSpinTime = parseInt(localStorage.getItem('petopia_last_spin')) || 0;
+let isSpinning = false;
+let spinTimerInterval = null;
+
+// Pula nagród z dokładnymi szansami % (Suma = 100%)
+const WHEEL_REWARDS = [
+    { name: "Legendarne Jajko", type: "egg_legendary", val: "legendary", deg: 0,   chance: 0.1 },
+    { name: "1000 Monet",       type: "coins",         val: 1000,        deg: 60,  chance: 8.4 },
+    { name: "Rzadkie Jajko",    type: "egg_rare",      val: "rare",      deg: 120, chance: 0.5 },
+    { name: "250 Monet",        type: "coins",         val: 250,         deg: 180, chance: 30.0 },
+    { name: "+1 Refill Stack",  type: "refill_stack",  val: 1,           deg: 240, chance: 1.0 },
+    { name: "50 Monet",         type: "coins",         val: 50,          deg: 300, chance: 60.0 }
+];
 
 // Zapis ukończonych misji
 let completedMissions = JSON.parse(localStorage.getItem('petopia_missions')) || [];
@@ -55,7 +76,7 @@ async function loadViews() {
         const views = [
             { id: 'tab-home', file: 'views/home.html' },
             { id: 'tab-collection', file: 'views/pets.html' },
-            { id: 'tab-upgrades', file: 'views/upgrades.html' }, // <-- NOWA ZAKŁADKA
+            { id: 'tab-upgrades', file: 'views/upgrades.html' },
             { id: 'tab-shop', file: 'views/shop.html' },
             { id: 'tab-missions', file: 'views/missions.html' }
         ];
@@ -70,7 +91,8 @@ async function loadViews() {
         bindDOMElements();
         setupEventListeners();
         initGame();
-        startEnergyRegen(); // Uruchomienie odnawiania energii
+        initSpinWheel();
+        startEnergyRegen();
 
     } catch (err) {
         console.error("Błąd podczas ładowania widoków:", err);
@@ -107,7 +129,6 @@ function setupEventListeners() {
     if (claimBtn) claimBtn.addEventListener('click', claimStarterPet);
     if (buyEggBtn) buyEggBtn.addEventListener('click', buyCommonEgg);
 
-    // Eventy dla zakupu ulepszeń
     if (buyMaxEnergyBtn) buyMaxEnergyBtn.addEventListener('click', buyMaxEnergyUpgrade);
     if (buyRegenSpeedBtn) buyRegenSpeedBtn.addEventListener('click', buyRegenSpeedUpgrade);
 
@@ -127,22 +148,21 @@ function setupEventListeners() {
             if (targetTab === 'tab-collection') {
                 renderCollection();
             } else if (targetTab === 'tab-upgrades') {
-                updateUpgradesUI(); // <-- Odświeżenie cennika przy wejściu w Upgrades
+                updateUpgradesUI();
             } else if (targetTab === 'tab-missions') {
                 updateMissionsUI();
             }
         });
     });
 
-    // Przelicz energię gdy gracz wraca do aplikacji/karty w przeglądarce
     document.addEventListener('visibilitychange', () => {
         if (!document.hidden) {
             calculateOfflineEnergy();
+            checkRefillStacksRegen();
         }
     });
 }
 
-// Funkcja pomocnicza do bezpiecznego wyświetlania monet
 function updateCoinsUI() {
     if (!coinsDisplay) return;
     const valSpan = document.getElementById('coins-value');
@@ -156,6 +176,7 @@ function updateCoinsUI() {
 // 6. INIT GAME
 function initGame() {
     calculateOfflineEnergy();
+    checkRefillStacksRegen();
     updateCoinsUI();
     updateEnergyUI();
     updateUpgradesUI();
@@ -205,6 +226,38 @@ function startEnergyRegen() {
     }, 1000);
 }
 
+// Odnawianie stacków Full Refill co 12 godzin (max do 2/2)
+function checkRefillStacksRegen() {
+    const now = Date.now();
+    const elapsed = now - lastRefillRegenTime;
+
+    if (elapsed >= REFILL_REGEN_TIME && fullRefillStacks < 2) {
+        const stacksToAdd = Math.floor(elapsed / REFILL_REGEN_TIME);
+        fullRefillStacks = Math.min(2, fullRefillStacks + stacksToAdd);
+        lastRefillRegenTime = now;
+        
+        localStorage.setItem('petopia_refill_stacks', fullRefillStacks);
+        localStorage.setItem('petopia_last_refill_regen', lastRefillRegenTime);
+    }
+}
+
+function useFullRefillStack() {
+    if (fullRefillStacks <= 0) {
+        showToast("❌ Brak ładunków Full Refill! Zaczekaj na odnowienie.");
+        return;
+    }
+
+    fullRefillStacks--;
+    energy = maxEnergy;
+
+    localStorage.setItem('petopia_refill_stacks', fullRefillStacks);
+    localStorage.setItem('petopia_energy', energy);
+
+    updateEnergyUI();
+    showToast(`⚡ Energia uzupełniona do pełna! Pozostało ładunków: ${fullRefillStacks}`);
+    triggerHaptic('success');
+}
+
 function updateEnergyUI() {
     if (energyText) energyText.innerText = `${energy} / ${maxEnergy}`;
     if (energyBarFill) {
@@ -238,7 +291,6 @@ function handleMainClick(e) {
     localStorage.setItem('petopia_last_energy_update', lastEnergyUpdate);
     updateEnergyUI();
 
-    // SCENARIUSZ A: Rozbijanie kupionego jajka ze sklepu
     if (isEggActive) {
         eggClicks++;
         localStorage.setItem('petopia_egg_clicks', eggClicks);
@@ -256,7 +308,6 @@ function handleMainClick(e) {
         return;
     }
 
-    // SCENARIUSZ B: Klikanie w aktywnego Zwierzaka (Zarabianie monet)
     if (hasPet) {
         const power = getClickPower();
         coins += power;
@@ -271,7 +322,6 @@ function handleMainClick(e) {
         return;
     }
 
-    // SCENARIUSZ C: Samouczek
     if (isHatched) return;
 
     clicks++;
@@ -366,7 +416,6 @@ function updateMissionsUI() {
     const m1Btn = document.getElementById('m1-btn');
     const m2Btn = document.getElementById('m2-btn');
 
-    // MISJA 1: Hatch Starter Pet
     if (m1Btn) {
         if (completedMissions.includes(1)) {
             m1Btn.innerText = "DONE ✅";
@@ -383,7 +432,6 @@ function updateMissionsUI() {
         }
     }
 
-    // MISJA 2: Reach 50 Taps
     if (m2Btn) {
         if (completedMissions.includes(2)) {
             m2Btn.innerText = "DONE ✅";
@@ -557,7 +605,7 @@ function buyMaxEnergyUpgrade() {
 
     coins -= cost;
     maxEnergy += 200;
-    energy += 200; // Natychmiastowe zasilenie paska przy zakupie pojemności
+    energy += 200;
 
     localStorage.setItem('petopia_coins', coins);
     localStorage.setItem('petopia_max_energy', maxEnergy);
@@ -589,7 +637,148 @@ function buyRegenSpeedUpgrade() {
     showToast(`🚀 Recharge rate is now ${energyRechargeRate} ⚡/sec!`);
 }
 
-// 14. EFEKTY I ANIMACJE
+// 14. LOGIKA DAILY SPIN (PŁYWAJĄCA IKONA + TIMER 24H)
+function initSpinWheel() {
+    const spinModal = document.getElementById('spin-modal');
+    const spinBadgeBtn = document.getElementById('spin-badge-btn');
+    const closeSpinBtn = document.getElementById('close-spin-btn');
+    const spinBtn = document.getElementById('spin-btn');
+
+    if (spinBadgeBtn) {
+        spinBadgeBtn.addEventListener('click', () => {
+            if (spinModal) spinModal.style.display = 'flex';
+            checkSpinAvailability();
+        });
+    }
+
+    if (closeSpinBtn) {
+        closeSpinBtn.addEventListener('click', () => {
+            if (spinModal) spinModal.style.display = 'none';
+        });
+    }
+
+    if (spinBtn) {
+        spinBtn.addEventListener('click', startSpin);
+    }
+
+    startBadgeTimer();
+}
+
+function startBadgeTimer() {
+    if (spinTimerInterval) clearInterval(spinTimerInterval);
+    updateBadgeTimerUI();
+    spinTimerInterval = setInterval(updateBadgeTimerUI, 1000);
+}
+
+function updateBadgeTimerUI() {
+    const spinBadgeBtn = document.getElementById('spin-badge-btn');
+    const badgeTimerText = document.getElementById('spin-badge-timer');
+    const spinBtn = document.getElementById('spin-btn');
+    const modalTimerText = document.getElementById('spin-timer-text');
+
+    const now = Date.now();
+    const cooldown = 24 * 60 * 60 * 1000;
+    const timePassed = now - lastSpinTime;
+
+    if (timePassed < cooldown) {
+        const timeLeft = cooldown - timePassed;
+        const hours = Math.floor(timeLeft / (1000 * 60 * 60));
+        const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+        const formattedTime = `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+
+        if (badgeTimerText) badgeTimerText.innerText = formattedTime;
+        if (spinBadgeBtn) spinBadgeBtn.classList.add('disabled');
+        if (spinBtn) {
+            spinBtn.disabled = true;
+            spinBtn.innerText = "ZABLOKOWANE";
+        }
+        if (modalTimerText) modalTimerText.innerText = `Kolejny los za: ${formattedTime}`;
+    } else {
+        if (badgeTimerText) badgeTimerText.innerText = "READY!";
+        if (spinBadgeBtn) spinBadgeBtn.classList.remove('disabled');
+        if (spinBtn) {
+            spinBtn.disabled = false;
+            spinBtn.innerText = "ZAKRĘĆ!";
+        }
+        if (modalTimerText) modalTimerText.innerText = "Zakręć kołem, aby wygrać darmowe nagrody!";
+    }
+}
+
+function getRandomWeightedReward() {
+    const random = Math.random() * 100;
+    let cumulativeChance = 0;
+
+    for (const reward of WHEEL_REWARDS) {
+        cumulativeChance += reward.chance;
+        if (random <= cumulativeChance) {
+            return reward;
+        }
+    }
+    return WHEEL_REWARDS[WHEEL_REWARDS.length - 1];
+}
+
+function startSpin() {
+    if (isSpinning) return;
+    const spinBtn = document.getElementById('spin-btn');
+    const wheel = document.getElementById('wheel');
+
+    isSpinning = true;
+    if (spinBtn) spinBtn.disabled = true;
+
+    const selectedReward = getRandomWeightedReward();
+    const extraRounds = (5 + Math.floor(Math.random() * 5)) * 360;
+    const finalRotation = extraRounds + selectedReward.deg;
+
+    if (wheel) {
+        wheel.style.transform = `rotate(${finalRotation}deg)`;
+    }
+
+    triggerHaptic('light');
+
+    setTimeout(() => {
+        isSpinning = false;
+        lastSpinTime = Date.now();
+        localStorage.setItem('petopia_last_spin', lastSpinTime);
+
+        applySpinReward(selectedReward);
+        updateBadgeTimerUI();
+    }, 4000);
+}
+
+function applySpinReward(reward) {
+    if (reward.type === "coins") {
+        coins += reward.val;
+        localStorage.setItem('petopia_coins', coins);
+        updateCoinsUI();
+        showToast(`🎉 Wygrałeś ${reward.val} monet!`);
+
+    } else if (reward.type === "refill_stack") {
+        fullRefillStacks += 1;
+        localStorage.setItem('petopia_refill_stacks', fullRefillStacks);
+        showToast(`⚡ Wygrałeś +1 Full Refill Stack! (${fullRefillStacks}/2)`);
+
+    } else if (reward.type === "egg_rare" || reward.type === "egg_legendary") {
+        const name = reward.type === "egg_rare" ? "Rzadkie Jajko 🥚" : "Legendarne Jajko 🌟";
+        isEggActive = true;
+        eggClicks = 0;
+        localStorage.setItem('petopia_is_egg_active', 'true');
+        localStorage.setItem('petopia_egg_clicks', '0');
+        localStorage.setItem('petopia_active_egg_type', reward.val);
+
+        showEggInMainArea();
+        showToast(`🎁 Niesamowite! Wygrałeś ${name}!`);
+    }
+
+    triggerHaptic('success');
+}
+
+function checkSpinAvailability() {
+    updateBadgeTimerUI();
+}
+
+// 15. EFEKTY I ANIMACJE
 function animateClick() {
     if (!mainImg) return;
     const randomDegree = (Math.random() - 0.5) * 16;
