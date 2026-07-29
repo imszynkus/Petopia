@@ -1,36 +1,33 @@
 const { Telegraf } = require('telegraf');
 const path = require('path');
+const http = require('http');
 
-// Pobieranie tokenu z ustawień serwera (zmiennych środowiskowych)
+// Pobieranie tokenu z ustawień serwera
 const bot = new Telegraf(process.env.BOT_TOKEN);
 
 // Reakcja na komendę /start
 bot.start((ctx) => {
-  // Tekst powitalny
   const captionText = `🐾 *WELCOME TO PETOPIA!* 🐾\n\n` +
     `Hatch eggs, collect rare 3D pets, and earn coins for the upcoming Airdrop!\n\n` +
     `Tap below to start your adventure:`;
 
-  // Wysyłanie zdjęcia z lokalnego folderu wraz z przyciskami
   ctx.replyWithPhoto(
-    { source: path.join(__dirname, 'img/logo.png') }, // Nazwa Twojego pliku ze zdjęciem
+    { source: path.join(__dirname, 'logo.png') },
     {
       caption: captionText,
       parse_mode: 'Markdown',
       reply_markup: {
         inline_keyboard: [
           [
-            // Przycisk uruchamiający grę wewnątrz Telegrama
             { 
               text: '🎮 Play Petopia', 
-              web_app: { url: 'https://twoja-gra.vercel.app' } // Tutaj wkleimy link do gry, gdy przetestujemy HTML
+              web_app: { url: 'https://twoja-gra.vercel.app' }
             }
           ],
           [
-            // Przycisk kierujący do kanału ze społecznością
             { 
               text: '📢 Join Official Channel', 
-              url: 'https://t.me/TwojKanalPetopia' // Podmień na link do swojego kanału
+              url: 'https://t.me/TwojKanalPetopia'
             }
           ]
         ]
@@ -46,6 +43,15 @@ bot.launch()
   .then(() => console.log('🚀 Bot Petopia został pomyślnie uruchomiony!'))
   .catch((err) => console.error('Błąd uruchamiania bota:', err));
 
-// Bezpieczne wyłączanie aplikacji przy zatrzymaniu serwera
+// Drobny serwer HTTP dla Rendera (wymagany dla planu Free Web Service)
+const port = process.env.PORT || 3000;
+http.createServer((req, res) => {
+  res.writeHead(200, { 'Content-Type': 'text/plain' });
+  res.end('Petopia Bot is running!');
+}).listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
+
+// Bezpieczne wyłączanie
 process.once('SIGINT', () => bot.stop('SIGINT'));
 process.once('SIGTERM', () => bot.stop('SIGTERM'));
