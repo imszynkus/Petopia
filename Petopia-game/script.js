@@ -1,6 +1,5 @@
 // Telegram WebApp SDK Initialization
 const tg = window.Telegram ? window.Telegram.WebApp : null;
-
 if (tg) {
     tg.expand();
     tg.ready();
@@ -11,46 +10,76 @@ let coins = parseInt(localStorage.getItem('petopia_coins')) || 0;
 let clicks = parseInt(localStorage.getItem('petopia_clicks')) || 0;
 let isHatched = localStorage.getItem('petopia_hatched') === 'true';
 let hasPet = localStorage.getItem('petopia_hasPet') === 'true';
-
-// Mission states
 let m1Claimed = localStorage.getItem('petopia_m1') === 'true';
 
 const target = 10;
 
-// DOM Elements
-const coinsDisplay = document.getElementById('coins-display');
-const clicksDisplay = document.getElementById('clicks');
-const mainInteractiveBtn = document.getElementById('main-interactive-btn');
-const mainImg = document.getElementById('main-img');
-const statusSubtitle = document.getElementById('status-subtitle');
-const counterLabel = document.getElementById('counter-label');
-const rewardModal = document.getElementById('reward-modal');
-const claimBtn = document.getElementById('claim-btn');
-const m1Btn = document.getElementById('m1-btn');
+// Dynamic DOM Reference Holders
+let coinsDisplay, clicksDisplay, mainInteractiveBtn, mainImg, statusSubtitle, counterLabel, rewardModal, claimBtn, m1Btn;
 
-// Navbar Elements
-const navButtons = document.querySelectorAll('.nav-btn');
-const tabContents = document.querySelectorAll('.tab-content');
+// 2. FETCH VIEWS LOADER
+async function loadAllViews() {
+    try {
+        const [home, pets, shop, missions] = await Promise.all([
+            fetch('views/home.html').then(res => res.text()),
+            fetch('views/pets.html').then(res => res.text()),
+            fetch('views/shop.html').then(res => res.text()),
+            fetch('views/missions.html').then(res => res.text())
+        ]);
 
-// Event Listeners
-mainInteractiveBtn.addEventListener('click', handleMainClick);
-claimBtn.addEventListener('click', claimPet);
-m1Btn.addEventListener('click', claimMission1);
+        document.getElementById('tab-home').innerHTML = home;
+        document.getElementById('tab-collection').innerHTML = pets;
+        document.getElementById('tab-shop').innerHTML = shop;
+        document.getElementById('tab-missions').innerHTML = missions;
 
-// Navbar Tab Switching
-navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-        const targetTab = btn.getAttribute('data-tab');
+        // Bind DOM Elements after HTML injection
+        bindDOMElements();
+        // Setup Event Listeners
+        setupEventListeners();
+        // Initialize Game State
+        initGame();
 
-        navButtons.forEach(b => b.classList.remove('active'));
-        tabContents.forEach(c => c.classList.remove('active'));
+    } catch (error) {
+        console.error("Error loading views:", error);
+    }
+}
 
-        btn.classList.add('active');
-        document.getElementById(targetTab).classList.add('active');
+// Bind elements dynamically loaded into HTML
+function bindDOMElements() {
+    coinsDisplay = document.getElementById('coins-display');
+    clicksDisplay = document.getElementById('clicks');
+    mainInteractiveBtn = document.getElementById('main-interactive-btn');
+    mainImg = document.getElementById('main-img');
+    statusSubtitle = document.getElementById('status-subtitle');
+    counterLabel = document.getElementById('counter-label');
+    rewardModal = document.getElementById('reward-modal');
+    claimBtn = document.getElementById('claim-btn');
+    m1Btn = document.getElementById('m1-btn');
+}
+
+// Setup click handlers
+function setupEventListeners() {
+    mainInteractiveBtn.addEventListener('click', handleMainClick);
+    claimBtn.addEventListener('click', claimPet);
+    m1Btn.addEventListener('click', claimMission1);
+
+    // Navbar Tab Switching
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const targetTab = btn.getAttribute('data-tab');
+            navButtons.forEach(b => b.classList.remove('active'));
+            tabContents.forEach(c => c.classList.remove('active'));
+
+            btn.classList.add('active');
+            document.getElementById(targetTab).classList.add('active');
+        });
     });
-});
+}
 
-// 2. INITIALIZATION
+// 3. INITIALIZATION
 function initGame() {
     coinsDisplay.innerText = coins;
     clicksDisplay.innerText = clicks;
@@ -64,13 +93,12 @@ function initGame() {
     updateMissionsUI();
 }
 
-// 3. CLICK LOGIC
+// 4. GAME LOGIC
 function handleMainClick() {
     if (hasPet) {
         coins += 1;
         coinsDisplay.innerText = coins;
         localStorage.setItem('petopia_coins', coins);
-
         triggerHaptic();
         animateClick();
         return;
@@ -88,11 +116,9 @@ function handleMainClick() {
     if (clicks >= target) {
         isHatched = true;
         localStorage.setItem('petopia_hatched', 'true');
-        
         if (tg && tg.HapticFeedback) {
             tg.HapticFeedback.notificationOccurred('success');
         }
-        
         setTimeout(showReward, 200);
     }
 }
@@ -100,7 +126,6 @@ function handleMainClick() {
 function animateClick() {
     const randomDegree = (Math.random() - 0.5) * 16;
     mainImg.style.transform = `rotate(${randomDegree}deg) scale(0.95)`;
-    
     setTimeout(() => {
         mainImg.style.transform = 'rotate(0deg) scale(1)';
     }, 80);
@@ -116,12 +141,10 @@ function showReward() {
     rewardModal.style.display = 'flex';
 }
 
-// 4. CLAIM PET
 function claimPet() {
     rewardModal.style.display = 'none';
     hasPet = true;
     localStorage.setItem('petopia_hasPet', 'true');
-
     showPetInMainArea();
     updateMissionsUI();
 }
@@ -135,7 +158,7 @@ function showPetInMainArea() {
 
 // 5. MISSIONS LOGIC
 function updateMissionsUI() {
-    // Mission 1: First Steps
+    if (!m1Btn) return;
     if (m1Claimed) {
         m1Btn.innerText = 'DONE';
         m1Btn.className = 'claim-mission-btn completed';
@@ -154,12 +177,11 @@ function claimMission1() {
         m1Claimed = true;
         localStorage.setItem('petopia_coins', coins);
         localStorage.setItem('petopia_m1', 'true');
-        
         coinsDisplay.innerText = coins;
         triggerHaptic();
         updateMissionsUI();
     }
 }
 
-// Start Game
-initGame();
+// Start Game by Loading Views
+loadAllViews();
