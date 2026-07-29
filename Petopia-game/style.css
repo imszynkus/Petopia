@@ -508,3 +508,38 @@ body {
     line-height: 1;
     transform: translateY(1px); /* Subtelna korekta optyczna dla czcionek systemowych */
 }
+/* GLOBALNA KLASA DLA BAZOWYCH ELEMENTÓW MONETY */
+.coin-amount,
+.reward-tag,
+.buy-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    line-height: 1 !important;
+}
+
+/* Ujednolicenie rozmiaru ikony monety wewnątrz elementów */
+.coin-amount img,
+.reward-tag img,
+.buy-btn img,
+.coin-icon {
+    width: 18px;
+    height: 18px;
+    object-fit: contain;
+    display: block;
+}
+
+/* Korekta dla przycisków w sklepie */
+.buy-btn {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    font-weight: 800;
+}
+
+/* Korekta dla tagów w misjach */
+.reward-tag {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #00FF88;
+}
