@@ -77,7 +77,8 @@ body {
 
 /* STYL DLA TWOJEGO JAJKA (OBRAZKA) */
 .egg-img {
-    width: 280px;
+    width: 320px;
+    max-width: 80vw;
     height: auto;
     filter: drop-shadow(0 10px 20px rgba(74, 222, 128, 0.3));
     transition: transform 0.08s ease;
