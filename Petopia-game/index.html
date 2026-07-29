@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Petopia Mini App</title>
+    <!-- Telegram WebApp SDK -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <!-- Arkusz stylów CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="header">
+        <h1 class="title">PETOPIA 🐾</h1>
+        <div class="subtitle">Klikaj jajko i kolekcjonuj potworki!</div>
+        
+        <div class="counter-card">
+            <div class="counter-text">Postęp samouczka</div>
+            <div class="counter-value"><span id="clicks">0</span> / <span id="target">10</span></div>
+        </div>
+    </div>
+
+    <div class="game-area">
+        <div class="egg-wrapper" id="egg-btn">
+            <div class="egg" id="egg">🥚</div>
+        </div>
+    </div>
+
+    <!-- OKNO Z NAGRODĄ SLIME -->
+    <div class="reward-modal" id="reward-modal">
+        <div class="modal-card">
+            <div class="pet-avatar">🟢</div>
+            <div class="pet-name">Starter Slime</div>
+            <div class="badge">STARTER PET</div>
+            <div class="pet-stats">⚡ Dochód: +1 moneta / sekunda</div>
+            <button class="claim-btn" id="claim-btn">ODBIERZ STWORKA</button>
+        </div>
+    </div>
+
+    <!-- Skrypt JavaScript -->
+    <script src="script.js"></script>
+</body>
+</html>
