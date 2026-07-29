@@ -60,6 +60,32 @@
         </div>
     </div>
 
+    <!-- TAB 4: MISSIONS (NOWA ZAKŁADKA) -->
+    <div id="tab-missions" class="tab-content">
+        <h2>Missions 🎯</h2>
+        <div class="missions-list">
+            
+            <div class="mission-item">
+                <div class="mission-info">
+                    <h3>First Steps</h3>
+                    <p>Hatch your starter pet</p>
+                    <span class="reward-tag">+50 🪙</span>
+                </div>
+                <button class="claim-mission-btn" id="m1-btn">CLAIM</button>
+            </div>
+
+            <div class="mission-item">
+                <div class="mission-info">
+                    <h3>Tap Master</h3>
+                    <p>Reach 50 total taps</p>
+                    <span class="reward-tag">+100 🪙</span>
+                </div>
+                <button class="claim-mission-btn disabled" id="m2-btn">0 / 50</button>
+            </div>
+
+        </div>
+    </div>
+
     <!-- REWARD MODAL -->
     <div class="reward-modal" id="reward-modal">
         <div class="modal-card">
@@ -71,7 +97,7 @@
         </div>
     </div>
 
-    <!-- BOTTOM NAVBAR -->
+    <!-- BOTTOM NAVBAR (DODANA IKONA MISSIONS) -->
     <nav class="bottom-nav">
         <button class="nav-btn active" data-tab="tab-home">
             <span class="nav-icon">🏠</span>
@@ -79,11 +105,15 @@
         </button>
         <button class="nav-btn" data-tab="tab-collection">
             <span class="nav-icon">🎒</span>
-            <span class="nav-label">Collection</span>
+            <span class="nav-label">Pets</span>
         </button>
         <button class="nav-btn" data-tab="tab-shop">
             <span class="nav-icon">🛒</span>
             <span class="nav-label">Shop</span>
+        </button>
+        <button class="nav-btn" data-tab="tab-missions">
+            <span class="nav-icon">🎯</span>
+            <span class="nav-label">Missions</span>
         </button>
     </nav>
 
