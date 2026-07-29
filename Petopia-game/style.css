@@ -293,3 +293,169 @@ body {
     color: #A0A5BA;
     opacity: 0.6;
 }
+
+/* ==========================================
+   DOPASOWANIE ROZMIARÓW GRAFIK I WIDOKÓW
+   ========================================== */
+
+/* 1. KONTENERY I NAGŁÓWKI ZAKŁADEK */
+.tab-content h2 {
+    margin-top: 20px;
+    margin-bottom: 15px;
+    color: #FFFFFF;
+    font-size: 22px;
+    text-align: center;
+}
+
+/* 2. GLÓWNY EKRAN - JAJKO / PET (OBRAZEK DYNAMICZNY) */
+.egg-img {
+    width: 240px; /* Bazowy rozmiar na głównym ekranie */
+    max-width: 70vw;
+    height: auto;
+    object-fit: contain;
+    transition: transform 0.08s ease;
+}
+
+/* 3. EKRAN MODAL (NAGRODA ZA WYKLUCIE) */
+.reward-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(12, 16, 29, 0.85);
+    backdrop-filter: blur(8px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+}
+
+.modal-card {
+    background: #1E2640;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 85%;
+    max-width: 340px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+/* Grafika stworka w modalu */
+.modal-card .pet-img {
+    width: 140px;
+    height: 140px;
+    object-fit: contain;
+    margin-bottom: 12px;
+}
+
+.pet-name {
+    font-size: 20px;
+    font-weight: 700;
+    color: #FFF;
+    margin-bottom: 6px;
+}
+
+.badge {
+    background: rgba(74, 222, 128, 0.15);
+    color: #4ADE80;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+}
+
+.pet-stats {
+    color: #A0A5BA;
+    font-size: 13px;
+    margin-bottom: 18px;
+}
+
+.claim-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #4ADE80, #22C55E);
+    border: none;
+    border-radius: 14px;
+    color: #0C101D;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+/* 4. SKLEP (SHOP) */
+.shop-item {
+    background: #1E2640;
+    border-radius: 16px;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Obrazek w sklepie – mały, estetyczny icon-size */
+.shop-item img {
+    width: 50px;
+    height: 50px;
+    object-fit: contain;
+    flex-shrink: 0;
+}
+
+.shop-info {
+    flex: 1;
+}
+
+.shop-info h3 {
+    margin: 0 0 4px 0;
+    font-size: 15px;
+    color: #FFF;
+}
+
+.shop-info p {
+    margin: 0;
+    font-size: 12px;
+    color: #A0A5BA;
+}
+
+.buy-btn {
+    background: #2D3748;
+    color: #FFD700;
+    border: 1px solid rgba(255, 215, 0, 0.3);
+    font-weight: 700;
+    padding: 8px 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+/* 5. KOLEKCJA / EKWIPUNEK (PETS GRID) */
+.collection-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    width: 100%;
+    padding: 10px 20px;
+    box-sizing: border-box;
+}
+
+.pet-card {
+    background: #1E2640;
+    border-radius: 16px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.pet-card img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+}
