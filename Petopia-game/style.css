@@ -772,7 +772,7 @@ body {
     filter: drop-shadow(0px 3px 5px rgba(0, 0, 0, 0.5));
 }
 
-/* Obrotowa tarcza z płynnym gradientem (brak szpar!) */
+/* Obrotowa tarcza z płynnym gradientem */
 .wheel-spinner {
     position: relative;
     width: 100%;
@@ -792,7 +792,7 @@ body {
     );
 }
 
-/* Teksty nagród rozmieszczone symetrycznie wewnątrz koła */
+/* Teksty nagród – bezpiecznie schowane do środka i czytelne */
 .wheel-slice {
     position: absolute;
     top: 50%;
@@ -807,11 +807,18 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    transform: translate(-50%, -105px) rotate(90deg);
-    font-size: 11px;
-    font-weight: 800;
+    /* Przesunięcie bliżej środka (75px zamiast 105px), żeby tekst nie wychodził do krawędzi */
+    transform: translate(-50%, -75px) rotate(90deg);
+    font-size: 10px;
+    font-weight: 900;
     color: #ffffff;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.9);
+    /* Mocny cień i obrys tekstu dla pełnej widoczności na każdym kolorze */
+    text-shadow: 
+        -1px -1px 0 #000,  
+        1px -1px 0 #000,
+        -1px 1px 0 #000,
+        1px 1px 0 #000,
+        0 2px 4px rgba(0, 0, 0, 0.9);
     white-space: nowrap;
 }
 
