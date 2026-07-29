@@ -25,7 +25,7 @@ body {
     align-items: center;
     
     /* Bezpieczny odstęp od aparatu/wyspy dla iOS i Androida + dodatkowy margin */
-    padding-top: max(env(safe-area-inset-top), 24px);
+    padding-top: max(env(safe-area-inset-top), 28px);
     margin-bottom: 15px;
 }
 
@@ -756,4 +756,21 @@ body {
 .counter-value #clicks .coin-icon {
     width: 26px;
     height: 26px;
+}
+
+.upgrades-view {
+    padding: 15px;
+    text-align: center;
+}
+
+.upgrades-view h2 {
+    margin-top: 0;
+    color: #fff;
+}
+
+.upgrades-subtitle {
+    font-size: 0.85em;
+    opacity: 0.7;
+    margin-bottom: 200px;
+    margin-bottom: 20px;
 }
