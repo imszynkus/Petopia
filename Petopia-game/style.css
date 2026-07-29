@@ -717,3 +717,43 @@ body {
     border-radius: 10px;
     transition: width 0.2s ease;
 }
+
+/* Pigułka na samej górze z monetami */
+.coins-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    color: #ffffff;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+/* Wygląd ikony monety */
+.coin-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+/* Wyśrodkowanie licznika +2 / tap */
+.counter-value #clicks {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px;
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #00bfff;
+}
+
+.counter-value #clicks .coin-icon {
+    width: 26px;
+    height: 26px;
+}
