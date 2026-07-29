@@ -43,11 +43,11 @@ let currentWheelRotation = 0; // Przechowuje aktualny obrót koła
 // Pula nagród z dokładnymi szansami % (Suma = 100%) - 6 SEKCJI PO 60 DEG
 const WHEEL_REWARDS = [
     { name: "Legendarne Jajko", type: "egg_legendary", val: "legendary", index: 0, chance: 0.1 },
-    { name: "1000 Monet",        type: "coins",         val: 1000,        index: 1, chance: 8.4 },
+    { name: "1000 Monet",        type: "coins",         val: 1000,         index: 1, chance: 8.4 },
     { name: "Rzadkie Jajko",     type: "egg_rare",      val: "rare",      index: 2, chance: 0.5 },
-    { name: "250 Monet",         type: "coins",         val: 250,         index: 3, chance: 30.0 },
-    { name: "+1 Refill Stack",   type: "refill_stack",  val: 1,           index: 4, chance: 1.0 },
-    { name: "50 Monet",          type: "coins",         val: 50,          index: 5, chance: 60.0 }
+    { name: "250 Monet",         type: "coins",         val: 250,          index: 3, chance: 30.0 },
+    { name: "+1 Refill Stack",   type: "refill_stack",  val: 1,            index: 4, chance: 1.0 },
+    { name: "50 Monet",          type: "coins",         val: 50,           index: 5, chance: 60.0 }
 ];
 
 // Zapis ukończonych misji
@@ -654,7 +654,7 @@ function initSpinWheel() {
 
         if (closeSpinBtn) {
             if (spinModal) spinModal.style.display = 'none';
-            return; doc
+            return;
         }
 
         if (spinBtn) {
@@ -666,7 +666,7 @@ function initSpinWheel() {
     startBadgeTimer();
 }
 
-function startBadgeTimer() { doc
+function startBadgeTimer() {
     if (spinTimerInterval) clearInterval(spinTimerInterval);
     updateBadgeTimerUI();
     spinTimerInterval = setInterval(updateBadgeTimerUI, 1000);
