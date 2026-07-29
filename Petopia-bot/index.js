@@ -12,7 +12,7 @@ bot.start((ctx) => {
     `Tap below to start your adventure:`;
 
   ctx.replyWithPhoto(
-    { source: path.join(__dirname, 'logo.png') },
+    { source: path.join(__dirname, 'img/logo.png') },
     {
       caption: captionText,
       parse_mode: 'Markdown',
