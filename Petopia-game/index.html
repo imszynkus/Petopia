@@ -16,22 +16,37 @@
     </div>
 
     <!-- MODAL KOŁA FORTUNY (DODANY BRAKUJĄCY KOD) -->
-    <div id="spin-modal" class="reward-modal" style="display: none;">
-        <div class="modal-card spin-modal-card">
-            <button id="close-spin-btn" class="close-modal-btn">✕</button>
-            <h3>Daily Spin 🎰</h3>
-            <p id="spin-timer-text">Zakręć kołem, aby wygrać darmowe nagrody!</p>
+<!-- MODAL KOŁA FORTUNY (6 DEDYKOWANYCH SEKCJI) -->
+<div id="spin-modal" class="reward-modal" style="display: none;">
+    <div class="modal-card spin-modal-card">
+        <button id="close-spin-btn" class="close-modal-btn">✕</button>
+        <h3>Daily Spin 🎰</h3>
+        <p id="spin-timer-text">Zakręć kołem, aby wygrać darmowe nagrody!</p>
+        
+        <div class="wheel-outer-container">
+            <div class="wheel-arrow">▼</div>
             
-            <div class="wheel-outer-container">
-                <div class="wheel-arrow">▼</div>
-                <div id="wheel" class="wheel-spinner">
-                    <img src="img/roulette.png" alt="Wheel" class="wheel-img">
-                </div>
+            <div id="wheel" class="wheel-spinner">
+                <!-- Sekcja 0: Legendarne Jajko (deg: 0) -->
+                <div class="wheel-slice" style="--i:0; --clr:#f1c40f;"><span>🌟 Legenda</span></div>
+                <!-- Sekcja 1: 1000 Monet (deg: 60) -->
+                <div class="wheel-slice" style="--i:1; --clr:#2ecc71;"><span>1000 🪙</span></div>
+                <!-- Sekcja 2: Rzadkie Jajko (deg: 120) -->
+                <div class="wheel-slice" style="--i:2; --clr:#3498db;"><span>🥚 Rare</span></div>
+                <!-- Sekcja 3: 250 Monet (deg: 180) -->
+                <div class="wheel-slice" style="--i:3; --clr:#e67e22;"><span>250 🪙</span></div>
+                <!-- Sekcja 4: +1 Refill (deg: 240) -->
+                <div class="wheel-slice" style="--i:4; --clr:#9b59b6;"><span>⚡ +1 Refill</span></div>
+                <!-- Sekcja 5: 50 Monet (deg: 300) -->
+                <div class="wheel-slice" style="--i:5; --clr:#e74c3c;"><span>50 🪙</span></div>
             </div>
-
-            <button id="spin-btn" class="action-btn spin-action-btn">ZAKRĘĆ!</button>
+            
+            <div class="wheel-center-cap">★</div>
         </div>
+
+        <button id="spin-btn" class="action-btn spin-action-btn">ZAKRĘĆ!</button>
     </div>
+</div>
     
     <!-- GŁÓWNY GÓRNY PASEK Z MONETAMI -->
     <div class="top-bar">
