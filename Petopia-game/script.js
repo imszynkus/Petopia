@@ -5,7 +5,7 @@ if (tg) {
     tg.ready();
 }
 
-// 0. IKONA MONETY (Zmień ścieżkę na swoją, np. 'img/coin.png')
+// 0. IKONA MONETY
 const COIN_ICON = `<img src="img/coin.png" class="coin-icon" style="width: 1.1em; height: 1.1em; vertical-align: middle; margin-left: 2px;" alt="coin">`;
 
 // 1. DEFINICJE ZWIERZAKÓW
@@ -22,10 +22,11 @@ let clicks = parseInt(localStorage.getItem('petopia_clicks')) || 0;
 let isHatched = localStorage.getItem('petopia_hatched') === 'true';
 let hasPet = localStorage.getItem('petopia_hasPet') === 'true';
 
-// SYSTEM ENERGII
+// SYSTEM ENERGII (Z NAPRAWIONĄ REGENERACJĄ OFFLINE)
 let maxEnergy = parseInt(localStorage.getItem('petopia_max_energy')) || 1000;
 let energy = localStorage.getItem('petopia_energy') !== null ? parseInt(localStorage.getItem('petopia_energy')) : maxEnergy;
 let energyRechargeRate = parseInt(localStorage.getItem('petopia_energy_rate')) || 1; // 1 ⚡ / sek
+let lastEnergyUpdate = parseInt(localStorage.getItem('petopia_last_energy_update')) || Date.now();
 
 // Zapis ukończonych misji
 let completedMissions = JSON.parse(localStorage.getItem('petopia_missions')) || [];
@@ -60,7 +61,8 @@ async function loadViews() {
         await Promise.all(views.map(async (view) => {
             const response = await fetch(view.file);
             const html = await response.text();
-            document.getElementById(view.id).innerHTML = html;
+            const el = document.getElementById(view.id);
+            if (el) el.innerHTML = html;
         }));
 
         bindDOMElements();
@@ -119,6 +121,13 @@ function setupEventListeners() {
             }
         });
     });
+
+    // Przelicz energię gdy gracz wraca do aplikacji/karty w przeglądarce
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            calculateOfflineEnergy();
+        }
+    });
 }
 
 // Funkcja pomocnicza do bezpiecznego wyświetlania monet
@@ -134,6 +143,7 @@ function updateCoinsUI() {
 
 // 6. INIT GAME
 function initGame() {
+    calculateOfflineEnergy();
     updateCoinsUI();
     updateEnergyUI();
 
@@ -152,14 +162,33 @@ function initGame() {
     updateMissionsUI();
 }
 
-// REGENERACJA ENERGII W TLE
+// 7. ENERGIA OFFLINE I REGENERACJA W CZASIE RZECZYWISTYM
+function calculateOfflineEnergy() {
+    const now = Date.now();
+    const elapsedSeconds = Math.floor((now - lastEnergyUpdate) / 1000);
+
+    if (elapsedSeconds > 0 && energy < maxEnergy) {
+        const energyGained = elapsedSeconds * energyRechargeRate;
+        energy = Math.min(maxEnergy, energy + energyGained);
+        
+        localStorage.setItem('petopia_energy', energy);
+        updateEnergyUI();
+    }
+    
+    lastEnergyUpdate = now;
+    localStorage.setItem('petopia_last_energy_update', lastEnergyUpdate);
+}
+
 function startEnergyRegen() {
     setInterval(() => {
+        const now = Date.now();
         if (energy < maxEnergy) {
             energy = Math.min(maxEnergy, energy + energyRechargeRate);
             localStorage.setItem('petopia_energy', energy);
             updateEnergyUI();
         }
+        lastEnergyUpdate = now;
+        localStorage.setItem('petopia_last_energy_update', lastEnergyUpdate);
     }, 1000);
 }
 
@@ -180,7 +209,7 @@ function getClickPower() {
     return Math.pow(2, petData.level);
 }
 
-// 7. OBSŁUGA KLIKANIA W GŁÓWNYM EKRANIE
+// 8. OBSŁUGA KLIKANIA W GŁÓWNYM EKRANIE
 function handleMainClick(e) {
     if (e) e.preventDefault();
 
@@ -191,7 +220,9 @@ function handleMainClick(e) {
     }
 
     energy--;
+    lastEnergyUpdate = Date.now();
     localStorage.setItem('petopia_energy', energy);
+    localStorage.setItem('petopia_last_energy_update', lastEnergyUpdate);
     updateEnergyUI();
 
     // SCENARIUSZ A: Rozbijanie kupionego jajka ze sklepu
@@ -248,7 +279,7 @@ function handleMainClick(e) {
     }
 }
 
-// 8. KUPOWANIE JAJKA W SKLEPIE
+// 9. KUPOWANIE JAJKA W SKLEPIE
 function buyCommonEgg() {
     if (isEggActive) {
         showToast("⚠️ You already have an egg to hatch on the main screen!");
@@ -317,7 +348,7 @@ function hatchShopEgg() {
     showActivePetInMainArea();
 }
 
-// 9. OBSŁUGA MISJI
+// 10. OBSŁUGA MISJI
 function updateMissionsUI() {
     const m1Btn = document.getElementById('m1-btn');
     const m2Btn = document.getElementById('m2-btn');
@@ -367,13 +398,12 @@ function claimMissionReward(missionId, rewardCoins) {
     localStorage.setItem('petopia_missions', JSON.stringify(completedMissions));
 
     updateCoinsUI();
-
     updateMissionsUI();
     triggerHaptic('success');
     showToast(`🎉 Mission completed! +${rewardCoins} ${COIN_ICON}`);
 }
 
-// 10. POMOCNICZE WIDOKI EKRANU GŁÓWNEGO
+// 11. POMOCNICZE WIDOKI EKRANU GŁÓWNEGO
 function showEggInMainArea() {
     if (mainImg) mainImg.src = 'img/eggs/egg.png';
     if (statusSubtitle) statusSubtitle.innerText = 'Tap to hatch your Common Egg!';
@@ -389,7 +419,7 @@ function showActivePetInMainArea() {
     if (mainImg) mainImg.src = currentPet.img;
 
     const petInfo = userPets[activePetId];
-    const levelText = activePetId === 'slime' ? 'MAX' : `Lvl ${petInfo.level}`;
+    const levelText = activePetId === 'slime' ? 'MAX' : `Lvl ${petInfo ? petInfo.level : 1}`;
 
     if (statusSubtitle) statusSubtitle.innerText = `Active: ${currentPet.name}`;
     if (counterLabel) counterLabel.innerText = `${currentPet.name} (${levelText})`;
@@ -427,7 +457,7 @@ function switchTab(tabId) {
     if (tab) tab.classList.add('active');
 }
 
-// 11. RENDEROWANIE KOLEKCJI
+// 12. RENDEROWANIE KOLEKCJI
 function renderCollection() {
     if (!collectionGrid) return;
     collectionGrid.innerHTML = '';
@@ -506,7 +536,7 @@ function showToast(message) {
 
     const toast = document.createElement('div');
     toast.className = 'toast';
-    toast.innerHTML = message; // Używamy innerHTML, by wspierać <img> w komunikacie Toast
+    toast.innerHTML = message;
     container.appendChild(toast);
 
     setTimeout(() => {
