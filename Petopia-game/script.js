@@ -127,19 +127,23 @@ function getClickPower() {
 
 // 7. OBSŁUGA KLIKANIA W GŁÓWNYM EKRANIE
 function handleMainClick() {
-    // SCENARIUSZ A: Rozbijanie kupionego jajka ze sklepu
     if (isEggActive) {
-        eggClicks++;
-        localStorage.setItem('petopia_egg_clicks', eggClicks);
-        if (clicksDisplay) clicksDisplay.innerText = eggClicks;
+    eggClicks++;
+    localStorage.setItem('petopia_egg_clicks', eggClicks);
+    
+    // ZAMIAST innerText UŻYWAMY innerHTML Z ZACHOWANIEM WARTOŚCI DOCELOWEJ:
+    if (clicksDisplay) {
+        clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.85em; opacity: 0.6;">/ ${EGG_TARGET_CLICKS}</span>`;
+    }
 
-        triggerHaptic();
-        animateClick();
+    triggerHaptic();
+    animateClick();
 
-        if (eggClicks >= EGG_TARGET_CLICKS) {
-            hatchShopEgg();
-        }
-        return;
+    if (eggClicks >= EGG_TARGET_CLICKS) {
+        hatchShopEgg();
+    }
+    return;
+}
     }
 
     // SCENARIUSZ B: Klikanie w aktywnego Zwierzaka (Zarabianie monet)
