@@ -183,13 +183,13 @@ function handleMainClick() {
 // 8. KUPOWANIE JAJKA W SKLEPIE
 function buyCommonEgg() {
     if (isEggActive) {
-        alert("You already have an egg to hatch on the main screen!");
+        showToast("⚠️ You already have an egg to hatch on the main screen!");
         switchTab('tab-home');
         return;
     }
 
     if (coins < EGG_PRICE) {
-        alert("Not enough coins! You need 100 🪙");
+        showToast("❌ Not enough coins! You need 100 🪙");
         return;
     }
 
@@ -197,7 +197,6 @@ function buyCommonEgg() {
     localStorage.setItem('petopia_coins', coins);
     if (coinsDisplay) coinsDisplay.innerText = coins;
 
-    // Aktywujemy jajko na ekranie głównym
     isEggActive = true;
     eggClicks = 0;
     localStorage.setItem('petopia_is_egg_active', 'true');
@@ -206,9 +205,9 @@ function buyCommonEgg() {
     showEggInMainArea();
     switchTab('tab-home');
     triggerHaptic();
+    showToast("🥚 Egg purchased! Tap to hatch it!");
 }
 
-// Wyklucie jajka ze sklepu po osiągnięciu limitu kliknięć
 function hatchShopEgg() {
     isEggActive = false;
     eggClicks = 0;
@@ -221,14 +220,14 @@ function hatchShopEgg() {
 
     if (!userPets[randomPetId]) {
         userPets[randomPetId] = { level: 1, shards: 0, unlocked: true };
-        alert(`🎉 EGG HATCHED!\nYou unlocked ${petData.name}! (+2 🪙/tap)`);
+        showToast(`🎉 Unlocked ${petData.name}! (+2 🪙/tap)`);
     } else {
         const userPet = userPets[randomPetId];
         if (userPet.level >= 3) {
             coins += 50;
             localStorage.setItem('petopia_coins', coins);
             if (coinsDisplay) coinsDisplay.innerText = coins;
-            alert(`✨ You hatched ${petData.name} (MAX LEVEL)!\nConverted into +50 🪙 refund.`);
+            showToast(`✨ Hatched ${petData.name} (MAX)! Converted to +50 🪙`);
         } else {
             userPet.shards += 1;
             const requiredShards = userPet.level === 1 ? 3 : 5;
@@ -236,11 +235,19 @@ function hatchShopEgg() {
             if (userPet.shards >= requiredShards) {
                 userPet.level += 1;
                 userPet.shards = 0;
-                alert(`🚀 LEVEL UP!\nYour ${petData.name} reached Level ${userPet.level}!`);
+                showToast(`🚀 LEVEL UP! ${petData.name} is now Lvl ${userPet.level}!`);
             } else {
-                alert(`💎 SHARD RECEIVED!\nGot 1 ${petData.name} shard (${userPet.shards}/${requiredShards}).`);
+                showToast(`💎 Got 1 ${petData.name} shard (${userPet.shards}/${requiredShards})`);
             }
         }
+    }
+
+    localStorage.setItem('petopia_user_pets', JSON.stringify(userPets));
+    activePetId = randomPetId;
+    localStorage.setItem('petopia_active_pet', activePetId);
+
+    showActivePetInMainArea();
+}
     }
 
     localStorage.setItem('petopia_user_pets', JSON.stringify(userPets));
@@ -347,7 +354,7 @@ function renderCollection() {
 window.equipPet = function(petId) {
     if (!userPets[petId] || !userPets[petId].unlocked) return;
     if (isEggActive) {
-        alert("Hatch your egg first before equipping another pet!");
+        showToast("⚠️ Hatch your egg first before equipping another pet!");
         return;
     }
     activePetId = petId;
@@ -368,6 +375,24 @@ function animateClick() {
 
 function triggerHaptic() {
     if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+}
+
+function showToast(message) {
+    let container = document.querySelector('.toast-container');
+    if (!container) {
+        container = document.createElement('div');
+        container.className = 'toast-container';
+        document.body.appendChild(container);
+    }
+
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerText = message;
+    container.appendChild(toast);
+
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
 }
 
 // RUN
