@@ -5,6 +5,9 @@ if (tg) {
     tg.ready();
 }
 
+// 0. IKONA MONETY (Zmień ścieżkę na swoją, np. 'img/coin.png')
+const COIN_ICON = `<img src="img/coin.png" class="coin-icon" style="width: 1.1em; height: 1.1em; vertical-align: middle; margin-left: 2px;" alt="coin">`;
+
 // 1. DEFINICJE ZWIERZAKÓW
 const PETS_DATABASE = {
     slime: { id: 'slime', name: 'Starter Slime', img: 'img/pets/slime.png', isStarter: true },
@@ -91,7 +94,6 @@ function bindDOMElements() {
 // 5. EVENT LISTENERS
 function setupEventListeners() {
     if (clickArea) {
-        // pointerdown działa znacznie szybciej na ekranach dotykowych niż 'click'
         clickArea.addEventListener('pointerdown', handleMainClick);
     }
     if (claimBtn) claimBtn.addEventListener('click', claimStarterPet);
@@ -119,9 +121,22 @@ function setupEventListeners() {
     });
 }
 
+// Funkcja pomocnicza do bezpiecznego wyświetlania monet
+function updateCoinsUI() {
+    if (!coinsDisplay) return;
+    // Jeśli w HTML jest element ze środka (np. <span id="coins-value"></span>), zmieniamy tylko jego tekst
+    const valSpan = coinsDisplay.querySelector('#coins-value');
+    if (valSpan) {
+        valSpan.innerText = coins;
+    } else {
+        // Jeśli nie ma spana, wstawiamy wartość razem z ikoną
+        coinsDisplay.innerHTML = `${coins} ${COIN_ICON}`;
+    }
+}
+
 // 6. INIT GAME
 function initGame() {
-    if (coinsDisplay) coinsDisplay.innerText = coins;
+    updateCoinsUI();
     updateEnergyUI();
 
     if (isEggActive) {
@@ -169,16 +184,14 @@ function getClickPower() {
 
 // 7. OBSŁUGA KLIKANIA W GŁÓWNYM EKRANIE
 function handleMainClick(e) {
-    if (e) e.preventDefault(); // Zapobiega zapętleniom i zoomowaniu przy szybkim klikaniu
+    if (e) e.preventDefault();
 
-    // Sprawdzanie Energii
     if (energy <= 0) {
         showToast("⚡ Out of energy! Wait for it to recharge.");
         triggerHaptic('error');
         return;
     }
 
-    // Zużycie energii
     energy--;
     localStorage.setItem('petopia_energy', energy);
     updateEnergyUI();
@@ -205,9 +218,9 @@ function handleMainClick(e) {
     if (hasPet) {
         const power = getClickPower();
         coins += power;
-        clicks++; // Zliczamy łączną liczbę kliknięć dla misji!
+        clicks++;
         
-        if (coinsDisplay) coinsDisplay.innerText = coins;
+        updateCoinsUI();
         localStorage.setItem('petopia_coins', coins);
         localStorage.setItem('petopia_clicks', clicks);
 
@@ -246,13 +259,13 @@ function buyCommonEgg() {
     }
 
     if (coins < EGG_PRICE) {
-        showToast("❌ Not enough coins! You need 100 <img src="img/coin.png" class="coin-icon" alt="Coin">");
+        showToast(`❌ Not enough coins! You need ${EGG_PRICE} ${COIN_ICON}`);
         return;
     }
 
     coins -= EGG_PRICE;
     localStorage.setItem('petopia_coins', coins);
-    if (coinsDisplay) coinsDisplay.innerText = coins;
+    updateCoinsUI();
 
     isEggActive = true;
     eggClicks = 0;
@@ -277,14 +290,14 @@ function hatchShopEgg() {
 
     if (!userPets[randomPetId]) {
         userPets[randomPetId] = { level: 1, shards: 0, unlocked: true };
-        showToast(`🎉 Unlocked ${petData.name}! (+2 <img src="img/coin.png" class="coin-icon" alt="Coin">/tap)`);
+        showToast(`🎉 Unlocked ${petData.name}! (+2 ${COIN_ICON}/tap)`);
     } else {
         const userPet = userPets[randomPetId];
         if (userPet.level >= 3) {
             coins += 50;
             localStorage.setItem('petopia_coins', coins);
-            if (coinsDisplay) coinsDisplay.innerText = coins;
-            showToast(`✨ Hatched ${petData.name} (MAX)! Converted to +50 <img src="img/coin.png" class="coin-icon" alt="Coin">`);
+            updateCoinsUI();
+            showToast(`✨ Hatched ${petData.name} (MAX)! Converted to +50 ${COIN_ICON}`);
         } else {
             userPet.shards += 1;
             const requiredShards = userPet.level === 1 ? 3 : 5;
@@ -355,11 +368,11 @@ function claimMissionReward(missionId, rewardCoins) {
     localStorage.setItem('petopia_coins', coins);
     localStorage.setItem('petopia_missions', JSON.stringify(completedMissions));
 
-    if (coinsDisplay) coinsDisplay.innerText = coins;
+    updateCoinsUI();
 
     updateMissionsUI();
     triggerHaptic('success');
-    showToast(`🎉 Mission completed! +${rewardCoins} <img src="img/coin.png" class="coin-icon" alt="Coin">`);
+    showToast(`🎉 Mission completed! +${rewardCoins} ${COIN_ICON}`);
 }
 
 // 10. POMOCNICZE WIDOKI EKRANU GŁÓWNEGO
@@ -384,7 +397,7 @@ function showActivePetInMainArea() {
     if (counterLabel) counterLabel.innerText = `${currentPet.name} (${levelText})`;
     
     if (clicksDisplay) {
-        clicksDisplay.innerHTML = `+${getClickPower()} <span style="font-size: 0.75em; opacity: 0.7;"><img src="img/coin.png" class="coin-icon" alt="Coin"> / tap</span>`;
+        clicksDisplay.innerHTML = `+${getClickPower()} <span style="font-size: 0.85em; opacity: 0.8;">${COIN_ICON} / tap</span>`;
     }
 }
 
@@ -495,7 +508,7 @@ function showToast(message) {
 
     const toast = document.createElement('div');
     toast.className = 'toast';
-    toast.innerText = message;
+    toast.innerHTML = message; // Używamy innerHTML, by wspierać <img> w komunikacie Toast
     container.appendChild(toast);
 
     setTimeout(() => {
