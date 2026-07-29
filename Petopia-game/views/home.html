@@ -1,10 +1,19 @@
 <div class="main-area">
-    <div class="counter-box">
-        <div id="counter-label" class="counter-label">HATCHING PROGRESS</div>
-        <div class="counter-value"><span id="clicks">0</span></div>
+    <!-- GÓRNY LICZNIK MONET -->
+    <div class="coins-badge" id="coins-display">
+        <img src="img/coin.png" alt="coin" class="coin-icon">
+        <span id="coins-value">0</span>
     </div>
 
-    <!-- POWIĘKSZONY OBSZAR KLIKANIA -->
+    <!-- ŚRODKOWY LICZNIK (+2 / tap LUB HATCHING PROGRESS) -->
+    <div class="counter-box">
+        <div id="counter-label" class="counter-label">HATCHING PROGRESS</div>
+        <div class="counter-value">
+            <span id="clicks">0</span>
+        </div>
+    </div>
+
+    <!-- OBSZAR KLIKANIA (ZWIERZAK / JAJKO) -->
     <div id="click-area" class="click-area">
         <img id="main-img" src="img/eggs/egg.png" alt="Pet or Egg" class="clickable-pet">
     </div>
