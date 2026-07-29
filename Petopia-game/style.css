@@ -790,18 +790,18 @@ body {
     width: 50%;
     height: 50%;
     top: 0;
-    right: 0;
+    left: 50%;
     background: var(--clr);
     transform-origin: 0% 100%;
-    transform: rotate(calc(60deg * var(--i)));
-    clip-path: polygon(0 0, 100% 0, 100% 100%);
+    transform: rotate(calc(60deg * var(--i) - 30deg));
+    clip-path: polygon(0 0, 100% 0, 0 100%);
 }
 
 /* Tekst nagrody w wycinku */
 .wheel-slice span {
     position: absolute;
-    left: 20px;
-    bottom: 25px;
+    left: 25px;
+    bottom: 20px;
     transform-origin: 0 100%;
     transform: rotate(30deg);
     font-size: 11px;
@@ -827,4 +827,32 @@ body {
     color: #f59e0b;
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Styl przycisku zakręcenia w modalu */
+.spin-action-btn {
+    width: 100%;
+    max-width: 220px;
+    margin-top: 15px;
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    color: #ffffff;
+    border: none;
+    border-radius: 14px;
+    padding: 12px;
+    font-weight: 800;
+    font-size: 15px;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(245, 158, 11, 0.4);
+    transition: transform 0.1s, opacity 0.2s;
+}
+
+.spin-action-btn:active {
+    transform: scale(0.95);
+}
+
+.spin-action-btn:disabled {
+    background: #475569;
+    color: #94a3b8;
+    cursor: not-allowed;
+    box-shadow: none;
 }
