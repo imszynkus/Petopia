@@ -459,3 +459,10 @@ body {
     height: 60px;
     object-fit: contain;
 }
+
+.coin-icon {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    vertical-align: middle;
+}
