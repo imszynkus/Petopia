@@ -246,7 +246,7 @@ function buyCommonEgg() {
     }
 
     if (coins < EGG_PRICE) {
-        showToast("❌ Not enough coins! You need 100 🪙");
+        showToast("❌ Not enough coins! You need 100 <img src="img/coin.png" class="coin-icon" alt="Coin">");
         return;
     }
 
@@ -277,14 +277,14 @@ function hatchShopEgg() {
 
     if (!userPets[randomPetId]) {
         userPets[randomPetId] = { level: 1, shards: 0, unlocked: true };
-        showToast(`🎉 Unlocked ${petData.name}! (+2 🪙/tap)`);
+        showToast(`🎉 Unlocked ${petData.name}! (+2 <img src="img/coin.png" class="coin-icon" alt="Coin">/tap)`);
     } else {
         const userPet = userPets[randomPetId];
         if (userPet.level >= 3) {
             coins += 50;
             localStorage.setItem('petopia_coins', coins);
             if (coinsDisplay) coinsDisplay.innerText = coins;
-            showToast(`✨ Hatched ${petData.name} (MAX)! Converted to +50 🪙`);
+            showToast(`✨ Hatched ${petData.name} (MAX)! Converted to +50 <img src="img/coin.png" class="coin-icon" alt="Coin">`);
         } else {
             userPet.shards += 1;
             const requiredShards = userPet.level === 1 ? 3 : 5;
@@ -359,7 +359,7 @@ function claimMissionReward(missionId, rewardCoins) {
 
     updateMissionsUI();
     triggerHaptic('success');
-    showToast(`🎉 Mission completed! +${rewardCoins} 🪙`);
+    showToast(`🎉 Mission completed! +${rewardCoins} <img src="img/coin.png" class="coin-icon" alt="Coin">`);
 }
 
 // 10. POMOCNICZE WIDOKI EKRANU GŁÓWNEGO
@@ -384,7 +384,7 @@ function showActivePetInMainArea() {
     if (counterLabel) counterLabel.innerText = `${currentPet.name} (${levelText})`;
     
     if (clicksDisplay) {
-        clicksDisplay.innerHTML = `+${getClickPower()} <span style="font-size: 0.75em; opacity: 0.7;">🪙 / tap</span>`;
+        clicksDisplay.innerHTML = `+${getClickPower()} <span style="font-size: 0.75em; opacity: 0.7;"><img src="img/coin.png" class="coin-icon" alt="Coin"> / tap</span>`;
     }
 }
 
