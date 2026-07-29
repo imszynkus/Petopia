@@ -47,13 +47,15 @@ const EGG_PRICE = 100;
 // Dynamic DOM References
 let coinsDisplay, clicksDisplay, clickArea, mainImg, statusSubtitle, counterLabel, rewardModal, claimBtn, buyEggBtn, collectionGrid;
 let energyText, energyBarFill;
+let buyMaxEnergyBtn, buyRegenSpeedBtn;
 
-// 3. FETCH LOADER
+// 3. FETCH LOADER (ŁADOWANIE WIDOKÓW)
 async function loadViews() {
     try {
         const views = [
             { id: 'tab-home', file: 'views/home.html' },
             { id: 'tab-collection', file: 'views/pets.html' },
+            { id: 'tab-upgrades', file: 'views/upgrades.html' }, // <-- NOWA ZAKŁADKA
             { id: 'tab-shop', file: 'views/shop.html' },
             { id: 'tab-missions', file: 'views/missions.html' }
         ];
@@ -91,6 +93,10 @@ function bindDOMElements() {
     // Pasek energii
     energyText = document.getElementById('energy-text');
     energyBarFill = document.getElementById('energy-bar-fill');
+
+    // Przyciski Upgrades
+    buyMaxEnergyBtn = document.getElementById('buy-max-energy-btn');
+    buyRegenSpeedBtn = document.getElementById('buy-regen-speed-btn');
 }
 
 // 5. EVENT LISTENERS
@@ -100,6 +106,10 @@ function setupEventListeners() {
     }
     if (claimBtn) claimBtn.addEventListener('click', claimStarterPet);
     if (buyEggBtn) buyEggBtn.addEventListener('click', buyCommonEgg);
+
+    // Eventy dla zakupu ulepszeń
+    if (buyMaxEnergyBtn) buyMaxEnergyBtn.addEventListener('click', buyMaxEnergyUpgrade);
+    if (buyRegenSpeedBtn) buyRegenSpeedBtn.addEventListener('click', buyRegenSpeedUpgrade);
 
     const navButtons = document.querySelectorAll('.nav-btn');
     const tabContents = document.querySelectorAll('.tab-content');
@@ -116,6 +126,8 @@ function setupEventListeners() {
 
             if (targetTab === 'tab-collection') {
                 renderCollection();
+            } else if (targetTab === 'tab-upgrades') {
+                updateUpgradesUI(); // <-- Odświeżenie cennika przy wejściu w Upgrades
             } else if (targetTab === 'tab-missions') {
                 updateMissionsUI();
             }
@@ -146,6 +158,7 @@ function initGame() {
     calculateOfflineEnergy();
     updateCoinsUI();
     updateEnergyUI();
+    updateUpgradesUI();
 
     if (isEggActive) {
         showEggInMainArea();
@@ -509,6 +522,74 @@ window.equipPet = function(petId) {
     triggerHaptic('light');
 };
 
+// 13. LOGIKA ULEPSZEŃ ENERGII (UPGRADES TAB)
+function getMaxEnergyCost() {
+    const level = (maxEnergy - 1000) / 200;
+    return Math.floor(150 * Math.pow(1.8, level));
+}
+
+function getRegenSpeedCost() {
+    const level = energyRechargeRate - 1;
+    return Math.floor(200 * Math.pow(2.2, level));
+}
+
+function updateUpgradesUI() {
+    const maxEnergyCost = getMaxEnergyCost();
+    const regenCost = getRegenSpeedCost();
+
+    const costMaxEl = document.getElementById('cost-max-energy');
+    const statsMaxEl = document.getElementById('upgrade-max-energy-stats');
+    if (costMaxEl) costMaxEl.innerText = maxEnergyCost;
+    if (statsMaxEl) statsMaxEl.innerText = `+200 ⚡ (Current: ${maxEnergy})`;
+
+    const costRegenEl = document.getElementById('cost-regen-speed');
+    const statsRegenEl = document.getElementById('upgrade-regen-rate-stats');
+    if (costRegenEl) costRegenEl.innerText = regenCost;
+    if (statsRegenEl) statsRegenEl.innerText = `+1 ⚡/s (Current: ${energyRechargeRate}/s)`;
+}
+
+function buyMaxEnergyUpgrade() {
+    const cost = getMaxEnergyCost();
+    if (coins < cost) {
+        showToast(`❌ Need ${cost} ${COIN_ICON} to upgrade capacity!`);
+        return;
+    }
+
+    coins -= cost;
+    maxEnergy += 200;
+    energy += 200; // Natychmiastowe zasilenie paska przy zakupie pojemności
+
+    localStorage.setItem('petopia_coins', coins);
+    localStorage.setItem('petopia_max_energy', maxEnergy);
+    localStorage.setItem('petopia_energy', energy);
+
+    updateCoinsUI();
+    updateEnergyUI();
+    updateUpgradesUI();
+    triggerHaptic('success');
+    showToast(`⚡ Max Energy increased to ${maxEnergy}!`);
+}
+
+function buyRegenSpeedUpgrade() {
+    const cost = getRegenSpeedCost();
+    if (coins < cost) {
+        showToast(`❌ Need ${cost} ${COIN_ICON} to upgrade recharge speed!`);
+        return;
+    }
+
+    coins -= cost;
+    energyRechargeRate += 1;
+
+    localStorage.setItem('petopia_coins', coins);
+    localStorage.setItem('petopia_energy_rate', energyRechargeRate);
+
+    updateCoinsUI();
+    updateUpgradesUI();
+    triggerHaptic('success');
+    showToast(`🚀 Recharge rate is now ${energyRechargeRate} ⚡/sec!`);
+}
+
+// 14. EFEKTY I ANIMACJE
 function animateClick() {
     if (!mainImg) return;
     const randomDegree = (Math.random() - 0.5) * 16;
