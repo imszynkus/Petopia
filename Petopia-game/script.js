@@ -12,6 +12,9 @@ let clicks = parseInt(localStorage.getItem('petopia_clicks')) || 0;
 let isHatched = localStorage.getItem('petopia_hatched') === 'true';
 let hasPet = localStorage.getItem('petopia_hasPet') === 'true';
 
+// Mission states
+let m1Claimed = localStorage.getItem('petopia_m1') === 'true';
+
 const target = 10;
 
 // DOM Elements
@@ -23,6 +26,7 @@ const statusSubtitle = document.getElementById('status-subtitle');
 const counterLabel = document.getElementById('counter-label');
 const rewardModal = document.getElementById('reward-modal');
 const claimBtn = document.getElementById('claim-btn');
+const m1Btn = document.getElementById('m1-btn');
 
 // Navbar Elements
 const navButtons = document.querySelectorAll('.nav-btn');
@@ -31,6 +35,7 @@ const tabContents = document.querySelectorAll('.tab-content');
 // Event Listeners
 mainInteractiveBtn.addEventListener('click', handleMainClick);
 claimBtn.addEventListener('click', claimPet);
+m1Btn.addEventListener('click', claimMission1);
 
 // Navbar Tab Switching
 navButtons.forEach(btn => {
@@ -55,13 +60,14 @@ function initGame() {
     } else if (isHatched) {
         showReward();
     }
+
+    updateMissionsUI();
 }
 
 // 3. CLICK LOGIC
 function handleMainClick() {
-    // If player owns a pet -> Click gives COINS
     if (hasPet) {
-        coins += 1; // +1 Coin per click
+        coins += 1;
         coinsDisplay.innerText = coins;
         localStorage.setItem('petopia_coins', coins);
 
@@ -70,7 +76,6 @@ function handleMainClick() {
         return;
     }
 
-    // If player is hatching the tutorial egg
     if (isHatched) return;
 
     clicks++;
@@ -118,6 +123,7 @@ function claimPet() {
     localStorage.setItem('petopia_hasPet', 'true');
 
     showPetInMainArea();
+    updateMissionsUI();
 }
 
 function showPetInMainArea() {
@@ -125,6 +131,34 @@ function showPetInMainArea() {
     statusSubtitle.innerText = 'Tap your pet to earn coins!';
     counterLabel.innerText = 'Pet Level';
     clicksDisplay.innerText = '1';
+}
+
+// 5. MISSIONS LOGIC
+function updateMissionsUI() {
+    // Mission 1: First Steps
+    if (m1Claimed) {
+        m1Btn.innerText = 'DONE';
+        m1Btn.className = 'claim-mission-btn completed';
+    } else if (hasPet) {
+        m1Btn.innerText = 'CLAIM';
+        m1Btn.className = 'claim-mission-btn';
+    } else {
+        m1Btn.innerText = 'LOCKED';
+        m1Btn.className = 'claim-mission-btn disabled';
+    }
+}
+
+function claimMission1() {
+    if (hasPet && !m1Claimed) {
+        coins += 50;
+        m1Claimed = true;
+        localStorage.setItem('petopia_coins', coins);
+        localStorage.setItem('petopia_m1', 'true');
+        
+        coinsDisplay.innerText = coins;
+        triggerHaptic();
+        updateMissionsUI();
+    }
 }
 
 // Start Game
