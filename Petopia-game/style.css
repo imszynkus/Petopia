@@ -75,22 +75,24 @@ body {
     -webkit-tap-highlight-color: transparent;
 }
 
-.egg {
-    width: 170px;
-    height: 220px;
-    background: linear-gradient(135deg, #4ade80, #10b981);
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 70px;
-    box-shadow: 0 0 35px rgba(74, 222, 128, 0.35), inset -10px -10px 20px rgba(0,0,0,0.2);
-    border: 4px solid #ffffff;
+/* STYL DLA TWOJEGO JAJKA (OBRAZKA) */
+.egg-img {
+    width: 200px;
+    height: auto;
+    filter: drop-shadow(0 10px 20px rgba(74, 222, 128, 0.3));
     transition: transform 0.08s ease;
 }
 
-.egg:active {
+.egg-img:active {
     transform: scale(0.92);
+}
+
+/* STYL DLA TWOJEGO SLIME'A (OBRAZKA) */
+.pet-img {
+    width: 130px;
+    height: auto;
+    margin-bottom: 15px;
+    filter: drop-shadow(0 5px 15px rgba(34, 197, 94, 0.4));
 }
 
 /* Popup nagrody */
@@ -118,13 +120,10 @@ body {
     width: 90%;
     max-width: 320px;
     box-shadow: 0 0 30px rgba(34, 197, 94, 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     animation: popUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-.pet-avatar {
-    font-size: 80px;
-    margin-bottom: 10px;
-    line-height: 1;
 }
 
 .pet-name {
