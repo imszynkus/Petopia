@@ -5,7 +5,7 @@ if (tg) {
     tg.ready();
 }
 
-// 1. GAME DATA & LOCALSTORAGE
+// 1. STATE MANAGEMENT
 let coins = parseInt(localStorage.getItem('petopia_coins')) || 0;
 let clicks = parseInt(localStorage.getItem('petopia_clicks')) || 0;
 let isHatched = localStorage.getItem('petopia_hatched') === 'true';
@@ -14,37 +14,37 @@ let m1Claimed = localStorage.getItem('petopia_m1') === 'true';
 
 const target = 10;
 
-// Dynamic DOM Reference Holders
+// Dynamic DOM Elements References
 let coinsDisplay, clicksDisplay, mainInteractiveBtn, mainImg, statusSubtitle, counterLabel, rewardModal, claimBtn, m1Btn;
 
-// 2. FETCH VIEWS LOADER
-async function loadAllViews() {
+// 2. FETCH ALL VIEWS SECURELY
+async function loadViews() {
     try {
-        const [home, pets, shop, missions] = await Promise.all([
-            fetch('views/home.html').then(res => res.text()),
-            fetch('views/pets.html').then(res => res.text()),
-            fetch('views/shop.html').then(res => res.text()),
-            fetch('views/missions.html').then(res => res.text())
-        ]);
+        const views = [
+            { id: 'tab-home', file: 'views/home.html' },
+            { id: 'tab-collection', file: 'views/pets.html' },
+            { id: 'tab-shop', file: 'views/shop.html' },
+            { id: 'tab-missions', file: 'views/missions.html' }
+        ];
 
-        document.getElementById('tab-home').innerHTML = home;
-        document.getElementById('tab-collection').innerHTML = pets;
-        document.getElementById('tab-shop').innerHTML = shop;
-        document.getElementById('tab-missions').innerHTML = missions;
+        // Pobieramy pliki równolegle
+        await Promise.all(views.map(async (view) => {
+            const response = await fetch(view.file);
+            const html = await response.text();
+            document.getElementById(view.id).innerHTML = html;
+        }));
 
-        // Bind DOM Elements after HTML injection
+        // Dopiero gdy pliki HTML W PEŁNI się załadują – przypisujemy zmienne i logikę!
         bindDOMElements();
-        // Setup Event Listeners
         setupEventListeners();
-        // Initialize Game State
         initGame();
 
-    } catch (error) {
-        console.error("Error loading views:", error);
+    } catch (err) {
+        console.error("Błąd podczas ładowania widoków fetch:", err);
     }
 }
 
-// Bind elements dynamically loaded into HTML
+// 3. BIND ELEMENTS (Gwarantujemy, że elementy istnieją w DOM)
 function bindDOMElements() {
     coinsDisplay = document.getElementById('coins-display');
     clicksDisplay = document.getElementById('clicks');
@@ -57,13 +57,12 @@ function bindDOMElements() {
     m1Btn = document.getElementById('m1-btn');
 }
 
-// Setup click handlers
+// 4. EVENT LISTENERS
 function setupEventListeners() {
-    mainInteractiveBtn.addEventListener('click', handleMainClick);
-    claimBtn.addEventListener('click', claimPet);
-    m1Btn.addEventListener('click', claimMission1);
+    if (mainInteractiveBtn) mainInteractiveBtn.addEventListener('click', handleMainClick);
+    if (claimBtn) claimBtn.addEventListener('click', claimPet);
+    if (m1Btn) m1Btn.addEventListener('click', claimMission1);
 
-    // Navbar Tab Switching
     const navButtons = document.querySelectorAll('.nav-btn');
     const tabContents = document.querySelectorAll('.tab-content');
 
@@ -74,15 +73,16 @@ function setupEventListeners() {
             tabContents.forEach(c => c.classList.remove('active'));
 
             btn.classList.add('active');
-            document.getElementById(targetTab).classList.add('active');
+            const targetElement = document.getElementById(targetTab);
+            if (targetElement) targetElement.classList.add('active');
         });
     });
 }
 
-// 3. INITIALIZATION
+// 5. LOGIKA GRY
 function initGame() {
-    coinsDisplay.innerText = coins;
-    clicksDisplay.innerText = clicks;
+    if (coinsDisplay) coinsDisplay.innerText = coins;
+    if (clicksDisplay) clicksDisplay.innerText = clicks;
 
     if (hasPet) {
         showPetInMainArea();
@@ -93,11 +93,10 @@ function initGame() {
     updateMissionsUI();
 }
 
-// 4. GAME LOGIC
 function handleMainClick() {
     if (hasPet) {
         coins += 1;
-        coinsDisplay.innerText = coins;
+        if (coinsDisplay) coinsDisplay.innerText = coins;
         localStorage.setItem('petopia_coins', coins);
         triggerHaptic();
         animateClick();
@@ -107,7 +106,7 @@ function handleMainClick() {
     if (isHatched) return;
 
     clicks++;
-    clicksDisplay.innerText = clicks;
+    if (clicksDisplay) clicksDisplay.innerText = clicks;
     localStorage.setItem('petopia_clicks', clicks);
 
     triggerHaptic();
@@ -116,14 +115,17 @@ function handleMainClick() {
     if (clicks >= target) {
         isHatched = true;
         localStorage.setItem('petopia_hatched', 'true');
+        
         if (tg && tg.HapticFeedback) {
             tg.HapticFeedback.notificationOccurred('success');
         }
+        
         setTimeout(showReward, 200);
     }
 }
 
 function animateClick() {
+    if (!mainImg) return;
     const randomDegree = (Math.random() - 0.5) * 16;
     mainImg.style.transform = `rotate(${randomDegree}deg) scale(0.95)`;
     setTimeout(() => {
@@ -138,25 +140,25 @@ function triggerHaptic() {
 }
 
 function showReward() {
-    rewardModal.style.display = 'flex';
+    if (rewardModal) rewardModal.style.display = 'flex';
 }
 
 function claimPet() {
-    rewardModal.style.display = 'none';
+    if (rewardModal) rewardModal.style.display = 'none';
     hasPet = true;
     localStorage.setItem('petopia_hasPet', 'true');
+
     showPetInMainArea();
     updateMissionsUI();
 }
 
 function showPetInMainArea() {
-    mainImg.src = 'img/pets/slime.png';
-    statusSubtitle.innerText = 'Tap your pet to earn coins!';
-    counterLabel.innerText = 'Pet Level';
-    clicksDisplay.innerText = '1';
+    if (mainImg) mainImg.src = 'img/pets/slime.png';
+    if (statusSubtitle) statusSubtitle.innerText = 'Tap your pet to earn coins!';
+    if (counterLabel) counterLabel.innerText = 'Pet Level';
+    if (clicksDisplay) clicksDisplay.innerText = '1';
 }
 
-// 5. MISSIONS LOGIC
 function updateMissionsUI() {
     if (!m1Btn) return;
     if (m1Claimed) {
@@ -177,11 +179,11 @@ function claimMission1() {
         m1Claimed = true;
         localStorage.setItem('petopia_coins', coins);
         localStorage.setItem('petopia_m1', 'true');
-        coinsDisplay.innerText = coins;
+        if (coinsDisplay) coinsDisplay.innerText = coins;
         triggerHaptic();
         updateMissionsUI();
     }
 }
 
-// Start Game by Loading Views
-loadAllViews();
+// ODPALENIE PROCESU Z FETCH
+loadViews();
