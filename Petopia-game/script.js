@@ -249,9 +249,14 @@ function showEggInMainArea() {
     if (mainImg) mainImg.src = 'img/eggs/egg.png';
     if (statusSubtitle) statusSubtitle.innerText = 'Tap to hatch your Common Egg!';
     if (counterLabel) counterLabel.innerText = 'Hatching Progress';
-    if (clicksDisplay) clicksDisplay.innerText = eggClicks;
+    
+    // Ustawiamy właściwy postęp (np. 0 / 50)
+    if (clicksDisplay) {
+        clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${EGG_TARGET_CLICKS}</span>`;
+    }
 }
 
+// Wyświetlanie aktywnego Zwierzaka na ekranie głównym
 function showActivePetInMainArea() {
     const currentPet = PETS_DATABASE[activePetId] || PETS_DATABASE.slime;
     if (mainImg) mainImg.src = currentPet.img;
@@ -259,9 +264,13 @@ function showActivePetInMainArea() {
     const petInfo = userPets[activePetId];
     const levelText = activePetId === 'slime' ? 'MAX' : `Lvl ${petInfo.level}`;
 
-    if (statusSubtitle) statusSubtitle.innerText = `Active: ${currentPet.name} (+${getClickPower()} 🪙/tap)`;
+    if (statusSubtitle) statusSubtitle.innerText = `Active: ${currentPet.name}`;
     if (counterLabel) counterLabel.innerText = `${currentPet.name} (${levelText})`;
-    if (clicksDisplay) clicksDisplay.innerText = getClickPower();
+    
+    // Pokazuje aktualny zarobek na kliknięcie zamiast staroświeckiego limitu /10
+    if (clicksDisplay) {
+        clicksDisplay.innerHTML = `+${getClickPower()} <span style="font-size: 0.75em; opacity: 0.7;">🪙 / tap</span>`;
+    }
 }
 
 function showStarterReward() {
