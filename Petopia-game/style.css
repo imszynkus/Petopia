@@ -758,19 +758,89 @@ body {
     height: 26px;
 }
 
+/* --- WIDOK UPGRADES --- */
+
 .upgrades-view {
-    padding: 15px;
+    padding: 20px 15px;
     text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
 }
 
 .upgrades-view h2 {
     margin-top: 0;
     color: #fff;
+    font-size: 1.5rem;
 }
 
 .upgrades-subtitle {
     font-size: 0.85em;
-    opacity: 0.7;
-    margin-bottom: 200px;
-    margin-bottom: 20px;
+    color: #a0aabe;
+    margin-bottom: 25px; /* Usunięto błąd 200px! */
+}
+
+.upgrades-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Karta pojedynczego ulepszenia */
+.upgrade-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+    backdrop-filter: blur(10px);
+}
+
+.upgrade-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.upgrade-info h4 {
+    margin: 0;
+    font-size: 1.05rem;
+    color: #fff;
+}
+
+.upgrade-info p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #a0aabe;
+}
+
+.upgrade-stats {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ffd700;
+    margin-top: 4px;
+}
+
+/* Przycisk zakupu ulepszenia */
+.buy-upgrade-btn {
+    background: #22c55e;
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    padding: 10px 16px;
+    font-weight: bold;
+    font-size: 0.95rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    white-space: nowrap;
+    transition: transform 0.1s, background 0.2s;
+}
+
+.buy-upgrade-btn:active {
+    transform: scale(0.95);
+    background: #16a34a;
 }
