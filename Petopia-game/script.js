@@ -124,13 +124,11 @@ function setupEventListeners() {
 // Funkcja pomocnicza do bezpiecznego wyświetlania monet
 function updateCoinsUI() {
     if (!coinsDisplay) return;
-    // Jeśli w HTML jest element ze środka (np. <span id="coins-value"></span>), zmieniamy tylko jego tekst
-    const valSpan = coinsDisplay.querySelector('#coins-value');
+    const valSpan = document.getElementById('coins-value');
     if (valSpan) {
         valSpan.innerText = coins;
     } else {
-        // Jeśli nie ma spana, wstawiamy wartość razem z ikoną
-        coinsDisplay.innerHTML = `${coins} ${COIN_ICON}`;
+        coinsDisplay.innerHTML = `<img src="img/coin.png" class="coin-icon" alt="Coin"> <span id="coins-value">${coins}</span>`;
     }
 }
 
