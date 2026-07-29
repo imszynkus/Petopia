@@ -21,7 +21,7 @@ bot.start((ctx) => {
           [
             { 
               text: '🎮 Play Petopia', 
-              web_app: { url: 'https://twoja-gra.vercel.app' }
+              web_app: { url: 'https://petopia-coral.vercel.app' }
             }
           ],
           [
