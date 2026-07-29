@@ -18,6 +18,36 @@ body {
     text-align: center;
 }
 
+.top-bar {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* Bezpieczny odstęp od aparatu/wyspy dla iOS i Androida + dodatkowy margin */
+    padding-top: max(env(safe-area-inset-top), 24px);
+    margin-bottom: 15px;
+}
+
+.resource-card {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 8px 18px;
+    border-radius: 20px;
+    
+    /* Idealne wyrównanie monety i liczby w pionie */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    
+    font-weight: 800;
+    font-size: 1.2rem;
+    line-height: 1; /* Eliminujemy domyślny przeskok linii tekstu */
+}
+
 .header {
     margin-top: 10px;
 }
