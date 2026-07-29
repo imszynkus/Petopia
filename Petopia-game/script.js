@@ -19,10 +19,10 @@ let clicks = parseInt(localStorage.getItem('petopia_clicks')) || 0;
 let isHatched = localStorage.getItem('petopia_hatched') === 'true';
 let hasPet = localStorage.getItem('petopia_hasPet') === 'true';
 
-// NOWE: Czy na ekranie głównym znajduje się kupione jajko do rozbicia?
+// Status Jajka ze sklepu
 let isEggActive = localStorage.getItem('petopia_is_egg_active') === 'true';
 let eggClicks = parseInt(localStorage.getItem('petopia_egg_clicks')) || 0;
-const EGG_TARGET_CLICKS = 50; // Liczba kliknięć potrzebna do rozbicia jajka ze sklepu
+const EGG_TARGET_CLICKS = 50;
 
 let activePetId = localStorage.getItem('petopia_active_pet') || 'slime';
 let userPets = JSON.parse(localStorage.getItem('petopia_user_pets')) || {
@@ -112,7 +112,9 @@ function initGame() {
         showStarterReward();
     } else {
         // Stan poczatkowy samouczka
-        if (clicksDisplay) clicksDisplay.innerText = clicks;
+        if (clicksDisplay) {
+            clicksDisplay.innerHTML = `${clicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${TUTORIAL_TARGET}</span>`;
+        }
     }
 }
 
@@ -127,23 +129,22 @@ function getClickPower() {
 
 // 7. OBSŁUGA KLIKANIA W GŁÓWNYM EKRANIE
 function handleMainClick() {
+    // SCENARIUSZ A: Rozbijanie kupionego jajka ze sklepu
     if (isEggActive) {
-    eggClicks++;
-    localStorage.setItem('petopia_egg_clicks', eggClicks);
-    
-    // ZAMIAST innerText UŻYWAMY innerHTML Z ZACHOWANIEM WARTOŚCI DOCELOWEJ:
-    if (clicksDisplay) {
-        clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.85em; opacity: 0.6;">/ ${EGG_TARGET_CLICKS}</span>`;
-    }
+        eggClicks++;
+        localStorage.setItem('petopia_egg_clicks', eggClicks);
+        
+        if (clicksDisplay) {
+            clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${EGG_TARGET_CLICKS}</span>`;
+        }
 
-    triggerHaptic();
-    animateClick();
+        triggerHaptic();
+        animateClick();
 
-    if (eggClicks >= EGG_TARGET_CLICKS) {
-        hatchShopEgg();
-    }
-    return;
-}
+        if (eggClicks >= EGG_TARGET_CLICKS) {
+            hatchShopEgg();
+        }
+        return;
     }
 
     // SCENARIUSZ B: Klikanie w aktywnego Zwierzaka (Zarabianie monet)
@@ -162,8 +163,11 @@ function handleMainClick() {
     if (isHatched) return;
 
     clicks++;
-    if (clicksDisplay) clicksDisplay.innerText = clicks;
     localStorage.setItem('petopia_clicks', clicks);
+    
+    if (clicksDisplay) {
+        clicksDisplay.innerHTML = `${clicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${TUTORIAL_TARGET}</span>`;
+    }
 
     triggerHaptic();
     animateClick();
@@ -252,15 +256,13 @@ function hatchShopEgg() {
 function showEggInMainArea() {
     if (mainImg) mainImg.src = 'img/eggs/egg.png';
     if (statusSubtitle) statusSubtitle.innerText = 'Tap to hatch your Common Egg!';
-    if (counterLabel) counterLabel.innerText = 'Hatching Progress';
+    if (counterLabel) counterLabel.innerText = 'HATCHING PROGRESS';
     
-    // Ustawiamy właściwy postęp (np. 0 / 50)
     if (clicksDisplay) {
         clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${EGG_TARGET_CLICKS}</span>`;
     }
 }
 
-// Wyświetlanie aktywnego Zwierzaka na ekranie głównym
 function showActivePetInMainArea() {
     const currentPet = PETS_DATABASE[activePetId] || PETS_DATABASE.slime;
     if (mainImg) mainImg.src = currentPet.img;
@@ -271,7 +273,6 @@ function showActivePetInMainArea() {
     if (statusSubtitle) statusSubtitle.innerText = `Active: ${currentPet.name}`;
     if (counterLabel) counterLabel.innerText = `${currentPet.name} (${levelText})`;
     
-    // Pokazuje aktualny zarobek na kliknięcie zamiast staroświeckiego limitu /10
     if (clicksDisplay) {
         clicksDisplay.innerHTML = `+${getClickPower()} <span style="font-size: 0.75em; opacity: 0.7;">🪙 / tap</span>`;
     }
