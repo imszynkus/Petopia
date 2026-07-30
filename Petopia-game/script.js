@@ -157,7 +157,7 @@ function setupEventListeners() {
             // === BLOKADA TUTORIALU ===
             // Jeśli gracz nie ma zwierzaka i klika inną zakładkę niż Home
             if (!hasPet && targetTab !== 'tab-home') {
-                showToast("⚠️ Najpierw wykluj startowego zwierzaka!");
+                showToast("⚠️ Hatch your starter pet first!");
                 triggerHaptic('error');
                 return; // Przerywamy działanie, nie przełączamy zakładki
             }
@@ -770,6 +770,14 @@ function initSpinWheel() {
         const spinModal = document.getElementById('spin-modal');
 
         if (spinBadgeBtn) {
+            // === BLOKADA TUTORIALU DLA KOŁA FORTUNY ===
+            if (!hasPet) {
+                showToast("⚠️ Hatch your starter pet first!");
+                triggerHaptic('error');
+                return;
+            }
+            // ==========================================
+
             if (spinModal) spinModal.style.display = 'flex';
             checkSpinAvailability();
             return;
