@@ -9,45 +9,45 @@
 </head>
 <body>
 
-    <!-- PŁYWAJĄCA IKONA DAILY SPIN -->
+    <!-- DAILY SPIN FLOATING BADGE -->
     <div id="spin-badge-btn" class="spin-floating-badge">
         <img src="img/roulette.png" alt="Daily Spin" class="spin-icon-img">
         <span id="spin-badge-timer" class="spin-badge-timer">READY!</span>
     </div>
 
-    <!-- MODAL KOŁA FORTUNY (6 DEDYKOWANYCH SEKCJI) -->
+    <!-- WHEEL OF FORTUNE MODAL (6 DEDICATED SECTIONS) -->
     <div id="spin-modal" class="reward-modal" style="display: none;">
         <div class="modal-card spin-modal-card">
             <button id="close-spin-btn" class="close-modal-btn">✕</button>
             <h3>Daily Spin 🎰</h3>
-            <p id="spin-timer-text">Zakręć kołem, aby wygrać darmowe nagrody!</p>
+            <p id="spin-timer-text">Spin the wheel to win free rewards!</p>
             
             <div class="wheel-outer-container">
                 <div class="wheel-arrow">▼</div>
                 
                 <div id="wheel" class="wheel-spinner">
-                    <!-- Sekcja 0: Legendarne Jajko (deg: 0) -->
-                    <div class="wheel-slice" style="--i:0; --clr:#f1c40f;"><span>🌟 Legenda</span></div>
-                    <!-- Sekcja 1: 1000 Monet (deg: 60) -->
-                    <div class="wheel-slice" style="--i:1; --clr:#2ecc71;"><span>1000 🪙</span></div>
-                    <!-- Sekcja 2: Rzadkie Jajko (deg: 120) -->
+                    <!-- Section 0: Legendary Egg -->
+                    <div class="wheel-slice" style="--i:0; --clr:#f1c40f;"><span>🌟 Legend</span></div>
+                    <!-- Section 1: 1000 Coins -->
+                    <div class="wheel-slice" style="--i:1; --clr:#2ecc71;"><span>1000 <img src="img/coin.png" class="coin-icon" alt="Coin"></span></div>
+                    <!-- Section 2: Rare Egg -->
                     <div class="wheel-slice" style="--i:2; --clr:#3498db;"><span>🥚 Rare</span></div>
-                    <!-- Sekcja 3: 250 Monet (deg: 180) -->
-                    <div class="wheel-slice" style="--i:3; --clr:#e67e22;"><span>250 🪙</span></div>
-                    <!-- Sekcja 4: +1 Refill (deg: 240) -->
+                    <!-- Section 3: 250 Coins -->
+                    <div class="wheel-slice" style="--i:3; --clr:#e67e22;"><span>250 <img src="img/coin.png" class="coin-icon" alt="Coin"></span></div>
+                    <!-- Section 4: +1 Refill -->
                     <div class="wheel-slice" style="--i:4; --clr:#9b59b6;"><span>⚡ +1 Refill</span></div>
-                    <!-- Sekcja 5: 50 Monet (deg: 300) -->
-                    <div class="wheel-slice" style="--i:5; --clr:#e74c3c;"><span>50 🪙</span></div>
+                    <!-- Section 5: 50 Coins -->
+                    <div class="wheel-slice" style="--i:5; --clr:#e74c3c;"><span>50 <img src="img/coin.png" class="coin-icon" alt="Coin"></span></div>
                 </div>
                 
                 <div class="wheel-center-cap">★</div>
             </div>
 
-            <button id="spin-btn" class="action-btn spin-action-btn">ZAKRĘĆ!</button>
+            <button id="spin-btn" class="action-btn spin-action-btn">SPIN!</button>
         </div>
     </div>
     
-    <!-- GŁÓWNY GÓRNY PASEK Z MONETAMI -->
+    <!-- MAIN TOP BAR WITH COINS -->
     <div class="top-bar">
         <div class="resource-card" id="coins-display">
             <img src="img/coin.png" class="coin-icon" alt="Coin">
