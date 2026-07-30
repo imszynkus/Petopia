@@ -369,7 +369,7 @@ function handleMainClick(e) {
     updateEnergyUI();
 
     // 1. SCENARIUSZ: JAJKO ZE SKLEPU
-    if (isEggActive) {
+if (isEggActive) {
         eggClicks++;
         localStorage.setItem('petopia_egg_clicks', eggClicks);
         
@@ -381,13 +381,13 @@ function handleMainClick(e) {
         
         let remainingEggClicks = EGG_TARGET_CLICKS - eggClicks;
         
-        // Animacje trzęsienia w zależności od postępu
-        if (remainingEggClicks > 5) {
-            animateClick(); // Zwykłe klikanie
-        } else if (remainingEggClicks > 0) {
-            // Końcówka - mocne trzęsienie
+        // Animacje i gumowy efekt przy każdym kliknięciu
+        animateClick();
+
+        if (remainingEggClicks <= 5 && remainingEggClicks > 0) {
+            // Końcówka - dodatkowe mocne trzęsienie
             mainImg.classList.remove('egg-shake-intense');
-            void mainImg.offsetWidth; // reset animacji
+            void mainImg.offsetWidth; 
             mainImg.classList.add('egg-shake-intense');
         }
 
