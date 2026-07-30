@@ -368,6 +368,7 @@ function handleMainClick(e) {
     localStorage.setItem('petopia_last_energy_update', lastEnergyUpdate);
     updateEnergyUI();
 
+    // 1. SCENARIUSZ: JAJKO ZE SKLEPU
     if (isEggActive) {
         eggClicks++;
         localStorage.setItem('petopia_egg_clicks', eggClicks);
@@ -377,14 +378,27 @@ function handleMainClick(e) {
         }
 
         triggerHaptic('light');
-        animateClick();
+        
+        let remainingEggClicks = EGG_TARGET_CLICKS - eggClicks;
+        
+        // Animacje trzęsienia w zależności od postępu
+        if (remainingEggClicks > 5) {
+            animateClick(); // Zwykłe klikanie
+        } else if (remainingEggClicks > 0) {
+            // Końcówka - mocne trzęsienie
+            mainImg.classList.remove('egg-shake-intense');
+            void mainImg.offsetWidth; // reset animacji
+            mainImg.classList.add('egg-shake-intense');
+        }
 
         if (eggClicks >= EGG_TARGET_CLICKS) {
-            hatchShopEgg();
+            mainImg.classList.remove('egg-shake-intense');
+            hatchShopEgg(); // Wywołujemy funkcję losującą nagrodę
         }
         return;
     }
 
+    // 2. SCENARIUSZ: ZWYKŁY ZWIERZAK (Zarabianie)
     if (hasPet) {
         const power = getClickPower();
         coins += power;
@@ -401,6 +415,7 @@ function handleMainClick(e) {
 
     if (isHatched) return;
 
+    // 3. SCENARIUSZ: JAJKO TUTORIALOWE
     clicks++;
     localStorage.setItem('petopia_clicks', clicks);
     
@@ -409,13 +424,35 @@ function handleMainClick(e) {
     }
 
     triggerHaptic('light');
-    animateClick();
+    
+    let remainingTutorialClicks = TUTORIAL_TARGET - clicks;
+
+    // Animacje trzęsienia dla tutorialu
+    if (remainingTutorialClicks > 3) {
+        animateClick();
+    } else if (remainingTutorialClicks > 0) {
+        mainImg.classList.remove('egg-shake-intense');
+        void mainImg.offsetWidth;
+        mainImg.classList.add('egg-shake-intense');
+    }
 
     if (clicks >= TUTORIAL_TARGET) {
+        mainImg.classList.remove('egg-shake-intense');
         isHatched = true;
         localStorage.setItem('petopia_hatched', 'true');
         triggerHaptic('success');
-        setTimeout(showStarterReward, 200);
+        
+        // Natychmiastowy błysk dla tutorialu
+        const flash = document.getElementById('flash-overlay');
+        if (flash) {
+            flash.classList.add('active');
+            setTimeout(() => {
+                flash.classList.remove('active');
+                showStarterReward(); // Wykorzystujemy Twój obecny modal startowy
+            }, 50);
+        } else {
+            setTimeout(showStarterReward, 200);
+        }
     }
 }
 
