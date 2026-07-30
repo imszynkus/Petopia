@@ -597,14 +597,23 @@ function renderCollection() {
         card.className = `pet-card ${isUnlocked ? '' : 'locked'}`;
 
         let statusHTML = '';
+        let idleRateHTML = '';
+
         if (petId === 'slime') {
             statusHTML = `<span class="badge-max">MAX LEVEL</span>`;
+            const idlePerSec = isUnlocked ? (1 * 0.2).toFixed(1) : 0;
+            idleRateHTML = `<div class="pet-idle-rate" style="font-size: 0.8em; color: #ffd700; margin: 4px 0;">💤 +${idlePerSec} ${COIN_ICON}/s</div>`;
         } else if (isUnlocked) {
             const reqShards = userData.level === 1 ? 3 : 5;
             const shardText = userData.level >= 3 ? 'MAX' : `${userData.shards}/${reqShards} Shards`;
             statusHTML = `<div class="pet-level">Lvl ${userData.level}</div><div class="pet-shards">${shardText}</div>`;
+            
+            const clickPower = Math.pow(2, userData.level);
+            const idlePerSec = (clickPower * 0.2).toFixed(1);
+            idleRateHTML = `<div class="pet-idle-rate" style="font-size: 0.8em; color: #ffd700; margin: 4px 0;">💤 +${idlePerSec} ${COIN_ICON}/s</div>`;
         } else {
             statusHTML = `<div class="pet-locked-text">Locked</div>`;
+            idleRateHTML = `<div class="pet-idle-rate" style="font-size: 0.8em; opacity: 0.4; margin: 4px 0;">💤 +0.0 ${COIN_ICON}/s</div>`;
         }
 
         const equipBtnHTML = isUnlocked ? 
@@ -614,6 +623,7 @@ function renderCollection() {
             <img src="${pet.img}" alt="${pet.name}" style="${isUnlocked ? '' : 'filter: grayscale(1); opacity: 0.4;'}">
             <div class="pet-card-name">${pet.name}</div>
             ${statusHTML}
+            ${idleRateHTML}
             ${equipBtnHTML}
         `;
 
