@@ -12,11 +12,11 @@ body {
     color: #ffffff;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
     margin: 0;
-    padding: 20px;
+    padding: 20px 20px 90px 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-start; /* NAPRAWIONE: elementy trzymają się góry zamiast rozciągać */
     min-height: 100vh;
     text-align: center;
 }
@@ -127,7 +127,6 @@ body {
     height: 26px;
 }
 
-/* Ujednolicenie monet w przyciskach i tagach */
 .coin-amount,
 .reward-tag {
     display: inline-flex !important;
@@ -181,7 +180,6 @@ body {
     pointer-events: none;
 }
 
-/* Pasek energii */
 .energy-container {
     width: 90%;
     max-width: 320px;
@@ -692,12 +690,13 @@ body {
    12. KOŁO FORTUNY (DAILY SPIN WIDGET)
    ========================================== */
 
-/* Pływająca ikona otwierająca koło */
+/* NAPRAWIONE: Pływająca ikona przeniesiona w bezpieczne miejsce (prawy górny róg) */
 .spin-floating-badge {
     position: fixed;
-    left: 15px;
-    top: 50%;
-    transform: translateY(-50%);
+    right: 15px;
+    left: auto;
+    top: 90px;
+    transform: none;
     z-index: 900;
     display: flex;
     flex-direction: column;
@@ -705,8 +704,8 @@ body {
     cursor: pointer;
     background: rgba(30, 41, 59, 0.85);
     border: 2px solid #f59e0b;
-    padding: 8px 10px;
-    border-radius: 16px;
+    padding: 6px 8px;
+    border-radius: 14px;
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
@@ -714,21 +713,21 @@ body {
 }
 
 .spin-floating-badge:active {
-    transform: translateY(-50%) scale(0.92);
+    transform: scale(0.92);
 }
 
 .spin-icon-img {
-    width: 44px;
-    height: 44px;
+    width: 36px;
+    height: 36px;
     object-fit: contain;
     filter: drop-shadow(0 2px 5px rgba(0, 0, 0, 0.3));
 }
 
 .spin-badge-timer {
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 800;
     color: #4ade80;
-    margin-top: 4px;
+    margin-top: 2px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
 }
@@ -792,7 +791,7 @@ body {
     );
 }
 
-/* Teksty nagród – bezpiecznie schowane do środka i czytelne */
+/* Teksty nagród */
 .wheel-slice {
     position: absolute;
     top: 50%;
@@ -807,12 +806,10 @@ body {
     position: absolute;
     left: 0;
     top: 0;
-    /* Przesunięcie bliżej środka (75px zamiast 105px), żeby tekst nie wychodził do krawędzi */
     transform: translate(-50%, -75px) rotate(90deg);
-    font-size: 14px;
+    font-size: 19px; /* Powiększona czcionka */
     font-weight: 900;
     color: #ffffff;
-    /* Mocny cień i obrys tekstu dla pełnej widoczności na każdym kolorze */
     text-shadow: 
         -1px -1px 0 #000,  
         1px -1px 0 #000,
@@ -833,7 +830,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 18px;
+    font-size: 12px;
     color: #f59e0b;
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
