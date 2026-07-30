@@ -585,6 +585,38 @@ function switchTab(tabId) {
 // 12. KOLEKCJA
 function renderCollection() {
     if (!collectionGrid) return;
+    
+    // Szukamy kontenera zakładki, aby wstrzyknąć element z łącznym podsumowaniem dochodu u góry
+    const collectionTab = document.getElementById('tab-collection');
+    if (collectionTab) {
+        let summaryBox = document.getElementById('total-passive-summary');
+        const totalPerSec = calculatePassiveIncomeRate();
+        const totalPerMin = (totalPerSec * 60).toFixed(1);
+        const totalPerHour = (totalPerSec * 3600).toFixed(0);
+
+        if (!summaryBox) {
+            summaryBox = document.createElement('div');
+            summaryBox.id = 'total-passive-summary';
+            summaryBox.style.cssText = `
+                background: rgba(255, 215, 0, 0.1);
+                border: 1px solid rgba(255, 215, 0, 0.3);
+                border-radius: 12px;
+                padding: 10px 15px;
+                margin-bottom: 15px;
+                text-align: center;
+                font-size: 0.9em;
+                color: #fff;
+            `;
+            // Wstrzykujemy na sam początek zakładki kolekcjonowania (nad gridem)
+            collectionTab.prepend(summaryBox);
+        }
+
+        summaryBox.innerHTML = `
+            <div style="font-weight: bold; margin-bottom: 2px; color: #ffd700;">💤 Total Passive Income</div>
+            <div><b>+${totalPerSec.toFixed(1)}</b> ${COIN_ICON}/s &nbsp;|&nbsp; <b>+${totalPerMin}</b> /min &nbsp;|&nbsp; <b>+${totalPerHour}</b> /h</div>
+        `;
+    }
+
     collectionGrid.innerHTML = '';
 
     Object.keys(PETS_DATABASE).forEach(petId => {
