@@ -496,14 +496,12 @@ function hatchShopEgg() {
 
     if (!userPets[randomPetId]) {
         userPets[randomPetId] = { level: 1, shards: 0, unlocked: true };
-        showToast(`🎉 Unlocked ${petData.name}!`);
     } else {
         const userPet = userPets[randomPetId];
         if (userPet.level >= 3) {
             coins += 50;
             localStorage.setItem('petopia_coins', coins);
             updateCoinsUI();
-            showToast(`✨ Hatched ${petData.name} (MAX)! +50 ${COIN_ICON}`);
         } else {
             userPet.shards += 1;
             const requiredShards = userPet.level === 1 ? 3 : 5;
@@ -511,9 +509,6 @@ function hatchShopEgg() {
             if (userPet.shards >= requiredShards) {
                 userPet.level += 1;
                 userPet.shards = 0;
-                showToast(`🚀 LEVEL UP! ${petData.name} Lvl ${userPet.level}!`);
-            } else {
-                showToast(`💎 Got 1 shard (${userPet.shards}/${requiredShards})`);
             }
         }
     }
@@ -522,7 +517,8 @@ function hatchShopEgg() {
     activePetId = randomPetId;
     localStorage.setItem('petopia_active_pet', activePetId);
 
-    showActivePetInMainArea();
+    // Otwieramy nowy modal z animacją wyklucia zwierzaka
+    triggerHatchAnimation(randomPetId);
 }
 
 // 10. MISJE
@@ -966,11 +962,11 @@ function checkSpinAvailability() {
 // 15. EFEKTY I POMOCNICZE
 function animateClick() {
     if (!mainImg) return;
-    const randomDegree = (Math.random() - 0.5) * 16;
-    mainImg.style.transform = `rotate(${randomDegree}deg) scale(0.95)`;
-    setTimeout(() => {
-        mainImg.style.transform = 'rotate(0deg) scale(1)';
-    }, 80);
+    
+    // Używamy nowego, płynnego efektu 'pet-squash' zamiast losowego kąta
+    mainImg.classList.remove('pet-squash');
+    void mainImg.offsetWidth; // Wymuszenie reflow dla zresetowania animacji CSS
+    mainImg.classList.add('pet-squash');
 }
 
 function triggerHaptic(type = 'light') {
@@ -1001,3 +997,25 @@ function showToast(message) {
 
 // RUN
 loadViews();
+
+// Otwieranie modala wyklucia ze sklepu
+function triggerHatchAnimation(petId) {
+    const modal = document.getElementById('hatch-reward-modal');
+    const rewardImg = document.getElementById('hatch-reward-img');
+    const rewardName = document.getElementById('hatch-reward-name');
+    
+    const petData = PETS_DATABASE[petId];
+
+    if (rewardImg && petData) rewardImg.src = petData.img;
+    if (rewardName && petData) rewardName.textContent = petData.name;
+    
+    if (modal) modal.style.display = 'flex';
+    triggerHaptic('success');
+}
+
+// Zamykanie modala wyklucia
+window.closeHatchReward = function() {
+    const modal = document.getElementById('hatch-reward-modal');
+    if (modal) modal.style.display = 'none';
+    showActivePetInMainArea();
+};
