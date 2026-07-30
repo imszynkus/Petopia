@@ -514,8 +514,6 @@ function hatchShopEgg() {
     }
 
     localStorage.setItem('petopia_user_pets', JSON.stringify(userPets));
-    activePetId = randomPetId;
-    localStorage.setItem('petopia_active_pet', activePetId);
 
     // Otwieramy nowy modal z animacją wyklucia zwierzaka
     triggerHatchAnimation(randomPetId);
