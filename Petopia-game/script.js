@@ -247,11 +247,14 @@ function startEnergyRegen() {
 function calculatePassiveIncomeRate() {
     let totalRatePerSecond = 0;
     
+    // Jeśli gracz nie ma jeszcze aktywnego zwierzaka (np. klika pierwsze jajko), nie generuje jeszcze pasywnego dochodu
+    if (!hasPet) return 0;
+    
     Object.keys(userPets).forEach(petId => {
         const userData = userPets[petId];
         if (userData && userData.unlocked) {
             let clickPowerForPet = (petId === 'slime') ? 1 : Math.pow(2, userData.level);
-            // Każdy zwierzak daje pasywnie 20% swojej mocy kliknięcia na sekundę
+            // Każdy odblokowany zwierzak daje pasywnie 20% swojej mocy kliknięcia na sekundę
             totalRatePerSecond += clickPowerForPet * 0.2;
         }
     });
