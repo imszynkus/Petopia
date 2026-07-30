@@ -809,7 +809,7 @@ body {
     top: 0;
     /* Przesunięcie bliżej środka (75px zamiast 105px), żeby tekst nie wychodził do krawędzi */
     transform: translate(-50%, -75px) rotate(90deg);
-    font-size: 10px;
+    font-size: 18px;
     font-weight: 900;
     color: #ffffff;
     /* Mocny cień i obrys tekstu dla pełnej widoczności na każdym kolorze */
