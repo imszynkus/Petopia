@@ -94,10 +94,26 @@ async function loadViews() {
         initGame();
         initSpinWheel();
         startEnergyRegen();
+        applyWheelStyles(); // Iniekcja stylów dla powiększonego fontu koła
 
     } catch (err) {
         console.error("Błąd podczas ładowania widoków:", err);
     }
+}
+
+// Funkcja dodająca style zwiększające font na kole fortuny
+function applyWheelStyles() {
+    if (document.getElementById('dynamic-wheel-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'dynamic-wheel-styles';
+    style.innerHTML = `
+        /* Zwiększenie czcionki i czytelności na wycinkach koła fortuny */
+        .wheel-section, .wheel-label, .wheel span, .wheel div {
+            font-size: 16px !important;
+            font-weight: bold !important;
+        }
+    `;
+    document.head.appendChild(style);
 }
 
 // 4. BIND ELEMENTS
@@ -679,7 +695,7 @@ function updateBadgeTimerUI() {
     const modalTimerText = document.getElementById('spin-timer-text');
 
     const now = Date.now();
-    const cooldown = 10 * 1000; // Testowo 10 sekund (zmień potem na 24 * 60 * 60 * 1000)
+    const cooldown = 24 * 60 * 60 * 1000; // Zmieniono na pełne 24 godziny
     const timePassed = now - lastSpinTime;
 
     if (timePassed < cooldown) {
@@ -725,7 +741,7 @@ function startSpin() {
     if (isSpinning) return;
     
     const now = Date.now();
-    const cooldown = 10 * 1000; // Testowo 10 sekund
+    const cooldown = 24 * 60 * 60 * 1000; // Zmieniono na pełne 24 godziny
     if (now - lastSpinTime < cooldown) {
         showToast("⏳ Koło fortuny jest jeszcze zablokowane!");
         return;
@@ -770,7 +786,7 @@ function applySpinReward(reward) {
         coins += reward.val;
         localStorage.setItem('petopia_coins', coins);
         updateCoinsUI();
-        showToast(`🎉 Wygrałeś ${reward.val} monet!`);
+        showToast(`🎉 Wygrałeś ${reward.val} ${COIN_ICON}!`); // Podmieniono monety na ikonię
 
     } else if (reward.type === "refill_stack") {
         fullRefillStacks += 1;
