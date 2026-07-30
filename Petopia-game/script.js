@@ -610,7 +610,6 @@ function renderCollection() {
                 font-size: 0.9em;
                 color: #fff;
             `;
-            // Wstrzykujemy na sam początek zakładki kolekcjonowania (nad gridem)
             collectionTab.prepend(summaryBox);
         }
 
@@ -625,8 +624,14 @@ function renderCollection() {
     Object.keys(PETS_DATABASE).forEach(petId => {
         const pet = PETS_DATABASE[petId];
         const userData = userPets[petId];
-        const isUnlocked = userData && userData.unlocked;
-        const isActive = activePetId === petId && !isEggActive;
+        
+        // POPRAWKA: Slime jest uznawany za odblokowany tylko wtedy, gdy gracz odebrał już nagrodę startową (hasPet)
+        let isUnlocked = userData && userData.unlocked;
+        if (petId === 'slime' && !hasPet) {
+            isUnlocked = false;
+        }
+
+        const isActive = activePetId === petId && !isEggActive && hasPet;
 
         const card = document.createElement('div');
         card.className = `pet-card ${isUnlocked ? '' : 'locked'}`;
@@ -635,9 +640,9 @@ function renderCollection() {
         let idleRateHTML = '';
 
         if (petId === 'slime') {
-            statusHTML = `<span class="badge-max">MAX LEVEL</span>`;
-            const idlePerSec = isUnlocked ? (1 * 0.2).toFixed(1) : 0;
-            idleRateHTML = `<div class="pet-idle-rate" style="font-size: 0.8em; color: #ffd700; margin: 4px 0;">💤 +${idlePerSec} ${COIN_ICON}/s</div>`;
+            statusHTML = `<span class="badge-max">${isUnlocked ? 'MAX LEVEL' : 'Locked'}</span>`;
+            const idlePerSec = isUnlocked ? (1 * 0.2).toFixed(1) : '0.0';
+            idleRateHTML = `<div class="pet-idle-rate" style="font-size: 0.8em; color: ${isUnlocked ? '#ffd700' : 'inherit'}; opacity: ${isUnlocked ? '1' : '0.4'}; margin: 4px 0;">💤 +${idlePerSec} ${COIN_ICON}/s</div>`;
         } else if (isUnlocked) {
             const reqShards = userData.level === 1 ? 3 : 5;
             const shardText = userData.level >= 3 ? 'MAX' : `${userData.shards}/${reqShards} Shards`;
