@@ -28,6 +28,10 @@ let energy = localStorage.getItem('petopia_energy') !== null ? parseInt(localSto
 let energyRechargeRate = parseInt(localStorage.getItem('petopia_energy_rate')) || 1; // 1 ⚡ / sek
 let lastEnergyUpdate = parseInt(localStorage.getItem('petopia_last_energy_update')) || Date.now();
 
+// SYSTEM IDLE (ZARABIANIE OFFLINE)
+let lastActiveTime = parseInt(localStorage.getItem('petopia_last_active_time')) || Date.now();
+let maxOfflineHours = parseInt(localStorage.getItem('petopia_max_offline_hours')) || 3; // Startowo 3 godziny (max 8h)
+
 // SYSTEM STACKÓW FULL REFILL (Domyślnie 2/2 max)
 let fullRefillStacks = parseInt(localStorage.getItem('petopia_refill_stacks'));
 if (isNaN(fullRefillStacks)) fullRefillStacks = 2;
@@ -38,9 +42,9 @@ const REFILL_REGEN_TIME = 12 * 60 * 60 * 1000; // 12 godzin
 let lastSpinTime = parseInt(localStorage.getItem('petopia_last_spin')) || 0;
 let isSpinning = false;
 let spinTimerInterval = null;
-let currentWheelRotation = 0; // Przechowuje aktualny obrót koła
+let currentWheelRotation = 0;
 
-// Pula nagród z dokładnymi szansami % (Suma = 100%) - 6 SEKCJI PO 60 DEG
+// Pula nagród koła fortuny
 const WHEEL_REWARDS = [
     { name: "Legendarne Jajko", type: "egg_legendary", val: "legendary", index: 0, chance: 0.1 },
     { name: "1000 Monet",        type: "coins",         val: 1000,         index: 1, chance: 8.4 },
@@ -50,10 +54,8 @@ const WHEEL_REWARDS = [
     { name: "50 Monet",          type: "coins",         val: 50,           index: 5, chance: 60.0 }
 ];
 
-// Zapis ukończonych misji
 let completedMissions = JSON.parse(localStorage.getItem('petopia_missions')) || [];
 
-// Status Jajka ze sklepu
 let isEggActive = localStorage.getItem('petopia_is_egg_active') === 'true';
 let eggClicks = parseInt(localStorage.getItem('petopia_egg_clicks')) || 0;
 const EGG_TARGET_CLICKS = 50;
@@ -94,20 +96,18 @@ async function loadViews() {
         initGame();
         initSpinWheel();
         startEnergyRegen();
-        applyWheelStyles(); // Iniekcja stylów dla powiększonego fontu koła
+        applyWheelStyles();
 
     } catch (err) {
         console.error("Błąd podczas ładowania widoków:", err);
     }
 }
 
-// Funkcja dodająca style zwiększające font na kole fortuny
 function applyWheelStyles() {
     if (document.getElementById('dynamic-wheel-styles')) return;
     const style = document.createElement('style');
     style.id = 'dynamic-wheel-styles';
     style.innerHTML = `
-        /* Zwiększenie czcionki i czytelności na wycinkach koła fortuny */
         .wheel-section, .wheel-label, .wheel span, .wheel div {
             font-size: 16px !important;
             font-weight: bold !important;
@@ -129,11 +129,9 @@ function bindDOMElements() {
     buyEggBtn = document.getElementById('buy-egg-btn');
     collectionGrid = document.getElementById('collection-grid');
 
-    // Pasek energii
     energyText = document.getElementById('energy-text');
     energyBarFill = document.getElementById('energy-bar-fill');
 
-    // Przyciski Upgrades
     buyMaxEnergyBtn = document.getElementById('buy-max-energy-btn');
     buyRegenSpeedBtn = document.getElementById('buy-regen-speed-btn');
 }
@@ -176,6 +174,7 @@ function setupEventListeners() {
         if (!document.hidden) {
             calculateOfflineEnergy();
             checkRefillStacksRegen();
+            checkOfflineEarnings();
         }
     });
 }
@@ -194,6 +193,7 @@ function updateCoinsUI() {
 function initGame() {
     calculateOfflineEnergy();
     checkRefillStacksRegen();
+    checkOfflineEarnings();
     updateCoinsUI();
     updateEnergyUI();
     updateUpgradesUI();
@@ -213,7 +213,7 @@ function initGame() {
     updateMissionsUI();
 }
 
-// 7. ENERGIA OFFLINE I REGENERACJA W CZASIE RZECZYWISTYM
+// 7. ENERGIA, IDLE ORAZ REGENERACJA
 function calculateOfflineEnergy() {
     const now = Date.now();
     const elapsedSeconds = Math.floor((now - lastEnergyUpdate) / 1000);
@@ -243,7 +243,54 @@ function startEnergyRegen() {
     }, 1000);
 }
 
-// Odnawianie stacków Full Refill co 12 godzin (max do 2/2)
+// SYSTEM IDLE: Obliczanie dochodu pasywnego ze wszystkich zwierzaków
+function calculatePassiveIncomeRate() {
+    let totalRatePerSecond = 0;
+    
+    Object.keys(userPets).forEach(petId => {
+        const userData = userPets[petId];
+        if (userData && userData.unlocked) {
+            let clickPowerForPet = (petId === 'slime') ? 1 : Math.pow(2, userData.level);
+            // Każdy zwierzak daje pasywnie 20% swojej mocy kliknięcia na sekundę
+            totalRatePerSecond += clickPowerForPet * 0.2;
+        }
+    });
+    
+    return totalRatePerSecond;
+}
+
+function checkOfflineEarnings() {
+    const now = Date.now();
+    const elapsedMs = now - lastActiveTime;
+    const passiveCoinsPerSecond = calculatePassiveIncomeRate();
+
+    if (passiveCoinsPerSecond > 0 && elapsedMs > 5000) {
+        const maxOfflineMs = maxOfflineHours * 60 * 60 * 1000;
+        const effectiveMs = Math.min(elapsedMs, maxOfflineMs);
+        
+        const elapsedSeconds = Math.floor(effectiveMs / 1000);
+        const earnedCoins = Math.floor(elapsedSeconds * passiveCoinsPerSecond);
+
+        if (earnedCoins > 0) {
+            coins += earnedCoins;
+            localStorage.setItem('petopia_coins', coins);
+            updateCoinsUI();
+            
+            const hoursFormatted = (elapsedSeconds / 3600).toFixed(1);
+            showToast(`💤 Offline! Zarobiłeś +${earnedCoins} ${COIN_ICON} w ciągu ${hoursFormatted}h.`);
+        }
+    }
+
+    updateLastActiveTime();
+}
+
+function updateLastActiveTime() {
+    lastActiveTime = Date.now();
+    localStorage.setItem('petopia_last_active_time', lastActiveTime);
+}
+
+setInterval(updateLastActiveTime, 15000);
+
 function checkRefillStacksRegen() {
     const now = Date.now();
     const elapsed = now - lastRefillRegenTime;
@@ -260,7 +307,7 @@ function checkRefillStacksRegen() {
 
 function useFullRefillStack() {
     if (fullRefillStacks <= 0) {
-        showToast("❌ Brak ładunków Full Refill! Zaczekaj na odnowienie.");
+        showToast("❌ Brak ładunków Full Refill!");
         return;
     }
 
@@ -271,7 +318,7 @@ function useFullRefillStack() {
     localStorage.setItem('petopia_energy', energy);
 
     updateEnergyUI();
-    showToast(`⚡ Energia uzupełniona do pełna! Pozostało ładunków: ${fullRefillStacks}`);
+    showToast(`⚡ Energia uzupełniona! Pozostało: ${fullRefillStacks}`);
     triggerHaptic('success');
 }
 
@@ -292,12 +339,12 @@ function getClickPower() {
     return Math.pow(2, petData.level);
 }
 
-// 8. OBSŁUGA KLIKANIA W GŁÓWNYM EKRANIE
+// 8. KLIKANIE
 function handleMainClick(e) {
     if (e) e.preventDefault();
 
     if (energy <= 0) {
-        showToast("⚡ Out of energy! Wait for it to recharge.");
+        showToast("⚡ Out of energy!");
         triggerHaptic('error');
         return;
     }
@@ -359,16 +406,16 @@ function handleMainClick(e) {
     }
 }
 
-// 9. KUPOWANIE JAJKA W SKLEPIE
+// 9. SKLEP I JAJKA
 function buyCommonEgg() {
     if (isEggActive) {
-        showToast("⚠️ You already have an egg to hatch on the main screen!");
+        showToast("⚠️ You already have an egg to hatch!");
         switchTab('tab-home');
         return;
     }
 
     if (coins < EGG_PRICE) {
-        showToast(`❌ Not enough coins! You need ${EGG_PRICE} ${COIN_ICON}`);
+        showToast(`❌ Not enough coins! Need ${EGG_PRICE} ${COIN_ICON}`);
         return;
     }
 
@@ -384,7 +431,7 @@ function buyCommonEgg() {
     showEggInMainArea();
     switchTab('tab-home');
     triggerHaptic('light');
-    showToast("🥚 Egg purchased! Tap to hatch it!");
+    showToast("🥚 Egg purchased!");
 }
 
 function hatchShopEgg() {
@@ -399,14 +446,14 @@ function hatchShopEgg() {
 
     if (!userPets[randomPetId]) {
         userPets[randomPetId] = { level: 1, shards: 0, unlocked: true };
-        showToast(`🎉 Unlocked ${petData.name}! (+2 ${COIN_ICON}/tap)`);
+        showToast(`🎉 Unlocked ${petData.name}!`);
     } else {
         const userPet = userPets[randomPetId];
         if (userPet.level >= 3) {
             coins += 50;
             localStorage.setItem('petopia_coins', coins);
             updateCoinsUI();
-            showToast(`✨ Hatched ${petData.name} (MAX)! Converted to +50 ${COIN_ICON}`);
+            showToast(`✨ Hatched ${petData.name} (MAX)! +50 ${COIN_ICON}`);
         } else {
             userPet.shards += 1;
             const requiredShards = userPet.level === 1 ? 3 : 5;
@@ -414,9 +461,9 @@ function hatchShopEgg() {
             if (userPet.shards >= requiredShards) {
                 userPet.level += 1;
                 userPet.shards = 0;
-                showToast(`🚀 LEVEL UP! ${petData.name} is now Lvl ${userPet.level}!`);
+                showToast(`🚀 LEVEL UP! ${petData.name} Lvl ${userPet.level}!`);
             } else {
-                showToast(`💎 Got 1 ${petData.name} shard (${userPet.shards}/${requiredShards})`);
+                showToast(`💎 Got 1 shard (${userPet.shards}/${requiredShards})`);
             }
         }
     }
@@ -428,7 +475,7 @@ function hatchShopEgg() {
     showActivePetInMainArea();
 }
 
-// 10. OBSŁUGA MISJI
+// 10. MISJE
 function updateMissionsUI() {
     const m1Btn = document.getElementById('m1-btn');
     const m2Btn = document.getElementById('m2-btn');
@@ -481,7 +528,7 @@ function claimMissionReward(missionId, rewardCoins) {
     showToast(`🎉 Mission completed! +${rewardCoins} ${COIN_ICON}`);
 }
 
-// 11. POMOCNICZE WIDOKI EKRANU GŁÓWNEGO
+// 11. WIDOK GŁÓWNY
 function showEggInMainArea() {
     if (mainImg) mainImg.src = 'img/eggs/egg.png';
     if (statusSubtitle) statusSubtitle.innerText = 'Tap to hatch your Common Egg!';
@@ -535,7 +582,7 @@ function switchTab(tabId) {
     if (tab) tab.classList.add('active');
 }
 
-// 12. RENDEROWANIE KOLEKCJI
+// 12. KOLEKCJA
 function renderCollection() {
     if (!collectionGrid) return;
     collectionGrid.innerHTML = '';
@@ -577,7 +624,7 @@ function renderCollection() {
 window.equipPet = function(petId) {
     if (!userPets[petId] || !userPets[petId].unlocked) return;
     if (isEggActive) {
-        showToast("⚠️ Hatch your egg first before equipping another pet!");
+        showToast("⚠️ Hatch your egg first!");
         return;
     }
     activePetId = petId;
@@ -587,7 +634,7 @@ window.equipPet = function(petId) {
     triggerHaptic('light');
 };
 
-// 13. LOGIKA ULEPSZEŃ ENERGII (UPGRADES TAB)
+// 13. ULEPSZENIA
 function getMaxEnergyCost() {
     const level = (maxEnergy - 1000) / 200;
     return Math.floor(150 * Math.pow(1.8, level));
@@ -616,7 +663,7 @@ function updateUpgradesUI() {
 function buyMaxEnergyUpgrade() {
     const cost = getMaxEnergyCost();
     if (coins < cost) {
-        showToast(`❌ Need ${cost} ${COIN_ICON} to upgrade capacity!`);
+        showToast(`❌ Need ${cost} ${COIN_ICON}`);
         return;
     }
 
@@ -638,7 +685,7 @@ function buyMaxEnergyUpgrade() {
 function buyRegenSpeedUpgrade() {
     const cost = getRegenSpeedCost();
     if (coins < cost) {
-        showToast(`❌ Need ${cost} ${COIN_ICON} to upgrade recharge speed!`);
+        showToast(`❌ Need ${cost} ${COIN_ICON}`);
         return;
     }
 
@@ -654,7 +701,7 @@ function buyRegenSpeedUpgrade() {
     showToast(`🚀 Recharge rate is now ${energyRechargeRate} ⚡/sec!`);
 }
 
-// 14. LOGIKA DAILY SPIN (PŁYWAJĄCA IKONA + TIMER)
+// 14. KOŁO FORTUNY
 function initSpinWheel() {
     document.addEventListener('click', (e) => {
         const spinBadgeBtn = e.target.closest('#spin-badge-btn');
@@ -695,7 +742,7 @@ function updateBadgeTimerUI() {
     const modalTimerText = document.getElementById('spin-timer-text');
 
     const now = Date.now();
-    const cooldown = 24 * 60 * 60 * 1000; // Zmieniono na pełne 24 godziny
+    const cooldown = 24 * 60 * 60 * 1000;
     const timePassed = now - lastSpinTime;
 
     if (timePassed < cooldown) {
@@ -710,17 +757,17 @@ function updateBadgeTimerUI() {
         if (spinBadgeBtn) spinBadgeBtn.classList.add('disabled');
         if (spinBtn) {
             spinBtn.disabled = true;
-            spinBtn.innerText = "ZABLOKOWANE";
+            spinBtn.innerText = "LOCKED";
         }
-        if (modalTimerText) modalTimerText.innerText = `Kolejny los za: ${formattedTime}`;
+        if (modalTimerText) modalTimerText.innerText = `Next spin in: ${formattedTime}`;
     } else {
         if (badgeTimerText) badgeTimerText.innerText = "READY!";
         if (spinBadgeBtn) spinBadgeBtn.classList.remove('disabled');
         if (spinBtn) {
             spinBtn.disabled = false;
-            spinBtn.innerText = "ZAKRĘĆ!";
+            spinBtn.innerText = "SPIN!";
         }
-        if (modalTimerText) modalTimerText.innerText = "Zakręć kołem, aby wygrać darmowe nagrody!";
+        if (modalTimerText) modalTimerText.innerText = "Spin the wheel for free rewards!";
     }
 }
 
@@ -741,9 +788,9 @@ function startSpin() {
     if (isSpinning) return;
     
     const now = Date.now();
-    const cooldown = 24 * 60 * 60 * 1000; // Zmieniono na pełne 24 godziny
+    const cooldown = 24 * 60 * 60 * 1000;
     if (now - lastSpinTime < cooldown) {
-        showToast("⏳ Koło fortuny jest jeszcze zablokowane!");
+        showToast("⏳ Wheel is locked!");
         return;
     }
 
@@ -755,7 +802,6 @@ function startSpin() {
 
     const selectedReward = getRandomWeightedReward();
 
-    // DOKŁADNA MATEMATYKA OBROTU DLA 6 WYCINKÓW PO 60 STOPNI:
     const sliceAngle = 60;
     const targetCenterAngle = (selectedReward.index * sliceAngle) + (sliceAngle / 2);
     
@@ -786,15 +832,15 @@ function applySpinReward(reward) {
         coins += reward.val;
         localStorage.setItem('petopia_coins', coins);
         updateCoinsUI();
-        showToast(`🎉 Wygrałeś ${reward.val} ${COIN_ICON}!`); // Podmieniono monety na ikonię
+        showToast(`🎉 Won ${reward.val} ${COIN_ICON}!`);
 
     } else if (reward.type === "refill_stack") {
         fullRefillStacks += 1;
         localStorage.setItem('petopia_refill_stacks', fullRefillStacks);
-        showToast(`⚡ Wygrałeś +1 Full Refill Stack! (${fullRefillStacks}/2)`);
+        showToast(`⚡ Won +1 Full Refill Stack! (${fullRefillStacks}/2)`);
 
     } else if (reward.type === "egg_rare" || reward.type === "egg_legendary") {
-        const name = reward.type === "egg_rare" ? "Rzadkie Jajko 🥚" : "Legendarne Jajko 🌟";
+        const name = reward.type === "egg_rare" ? "Rare Egg 🥚" : "Legendary Egg 🌟";
         isEggActive = true;
         eggClicks = 0;
         localStorage.setItem('petopia_is_egg_active', 'true');
@@ -802,7 +848,7 @@ function applySpinReward(reward) {
         localStorage.setItem('petopia_active_egg_type', reward.val);
 
         showEggInMainArea();
-        showToast(`🎁 Niesamowite! Wygrałeś ${name}!`);
+        showToast(`🎁 Amazing! Won ${name}!`);
     }
 
     triggerHaptic('success');
@@ -812,7 +858,7 @@ function checkSpinAvailability() {
     updateBadgeTimerUI();
 }
 
-// 15. EFEKTY I ANIMACJE
+// 15. EFEKTY I POMOCNICZE
 function animateClick() {
     if (!mainImg) return;
     const randomDegree = (Math.random() - 0.5) * 16;
