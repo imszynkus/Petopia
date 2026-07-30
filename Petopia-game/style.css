@@ -16,7 +16,7 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* NAPRAWIONE: elementy trzymają się góry zamiast rozciągać */
+    justify-content: center; /* PRZYWRÓCONE: ekran główny ładnie na środku */
     min-height: 100vh;
     text-align: center;
 }
@@ -690,7 +690,7 @@ body {
    12. KOŁO FORTUNY (DAILY SPIN WIDGET)
    ========================================== */
 
-/* NAPRAWIONE: Pływająca ikona przeniesiona w bezpieczne miejsce (prawy górny róg) */
+/* Pływająca ikona w prawym górnym rogu */
 .spin-floating-badge {
     position: fixed;
     right: 15px;
@@ -807,7 +807,7 @@ body {
     left: 0;
     top: 0;
     transform: translate(-50%, -75px) rotate(90deg);
-    font-size: 19px; /* Powiększona czcionka */
+    font-size: 12px; /* PRZYWRÓCONE: optymalny rozmiar czcionki na 12px */
     font-weight: 900;
     color: #ffffff;
     text-shadow: 
@@ -830,7 +830,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 10px;
+    font-size: 18px;
     color: #f59e0b;
     z-index: 10;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
