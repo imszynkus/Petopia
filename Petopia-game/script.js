@@ -153,6 +153,16 @@ function setupEventListeners() {
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
             const targetTab = btn.getAttribute('data-tab');
+
+            // === BLOKADA TUTORIALU ===
+            // Jeśli gracz nie ma zwierzaka i klika inną zakładkę niż Home
+            if (!hasPet && targetTab !== 'tab-home') {
+                showToast("⚠️ Najpierw wykluj startowego zwierzaka!");
+                triggerHaptic('error');
+                return; // Przerywamy działanie, nie przełączamy zakładki
+            }
+            // =========================
+
             navButtons.forEach(b => b.classList.remove('active'));
             tabContents.forEach(c => c.classList.remove('active'));
 
