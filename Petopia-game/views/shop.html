@@ -1,11 +1,52 @@
 <h2>Shop 🛒</h2>
 <div class="shop-list">
+    <!-- Common Egg -->
     <div class="shop-item">
-        <img src="img/eggs/egg.png" alt="Common Egg">
+        <img src="img/eggs/egg_common.png" alt="Common Egg">
         <div class="shop-info">
             <h3>Common Egg</h3>
+            <p>Requires: 30 taps</p>
+        </div>
+        <button class="buy-btn" onclick="buyEgg('common')">200 <img src="img/coin.png" class="coin-icon" alt="Coin"></button>
+    </div>
+
+    <!-- Uncommon Egg -->
+    <div class="shop-item">
+        <img src="img/eggs/egg_uncommon.png" alt="Uncommon Egg">
+        <div class="shop-info">
+            <h3>Uncommon Egg</h3>
             <p>Requires: 50 taps</p>
         </div>
-        <button class="buy-btn" id="buy-egg-btn">100 <img src="img/coin.png" class="coin-icon" alt="Coin"></button>
+        <button class="buy-btn" onclick="buyEgg('uncommon')">800 <img src="img/coin.png" class="coin-icon" alt="Coin"></button>
+    </div>
+
+    <!-- Rare Egg -->
+    <div class="shop-item">
+        <img src="img/eggs/egg_rare.png" alt="Rare Egg">
+        <div class="shop-info">
+            <h3>Rare Egg</h3>
+            <p>Requires: 80 taps</p>
+        </div>
+        <button class="buy-btn" onclick="buyEgg('rare')">2500 <img src="img/coin.png" class="coin-icon" alt="Coin"></button>
+    </div>
+
+    <!-- Epic Egg -->
+    <div class="shop-item">
+        <img src="img/eggs/egg_epic.png" alt="Epic Egg">
+        <div class="shop-info">
+            <h3>Epic Egg</h3>
+            <p>Requires: 120 taps</p>
+        </div>
+        <button class="buy-btn" onclick="buyEgg('epic')">7000 <img src="img/coin.png" class="coin-icon" alt="Coin"></button>
+    </div>
+
+    <!-- Legendary Egg -->
+    <div class="shop-item">
+        <img src="img/eggs/egg_legendary.png" alt="Legendary Egg">
+        <div class="shop-info">
+            <h3>Legendary Egg</h3>
+            <p>Requires: 200 taps</p>
+        </div>
+        <button class="buy-btn" onclick="buyEgg('legendary')">25000 <img src="img/coin.png" class="coin-icon" alt="Coin"></button>
     </div>
 </div>
