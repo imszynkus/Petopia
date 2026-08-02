@@ -16,6 +16,15 @@ const PETS_DATABASE = {
     owl: { id: 'owl', name: 'Owl', img: 'img/pets/owl.png', isStarter: false }
 };
 
+// DEFINICJE JAJEK I ICH CENY
+const EGGS_DATABASE = {
+    common: { id: 'common', name: 'Common Egg', price: 200, img: 'img/eggs/egg_common.png', targetClicks: 30 },
+    uncommon: { id: 'uncommon', name: 'Uncommon Egg', price: 800, img: 'img/eggs/egg_uncommon.png', targetClicks: 50 },
+    rare: { id: 'rare', name: 'Rare Egg', price: 2500, img: 'img/eggs/egg_rare.png', targetClicks: 80 },
+    epic: { id: 'epic', name: 'Epic Egg', price: 7000, img: 'img/eggs/egg_epic.png', targetClicks: 120 },
+    legendary: { id: 'legendary', name: 'Legendary Egg', price: 25000, img: 'img/eggs/egg_legendary.png', targetClicks: 200 }
+};
+
 // 2. STATE MANAGEMENT & LOCALSTORAGE
 let coins = parseInt(localStorage.getItem('petopia_coins')) || 0;
 let clicks = parseInt(localStorage.getItem('petopia_clicks')) || 0;
@@ -58,7 +67,8 @@ let completedMissions = JSON.parse(localStorage.getItem('petopia_missions')) || 
 
 let isEggActive = localStorage.getItem('petopia_is_egg_active') === 'true';
 let eggClicks = parseInt(localStorage.getItem('petopia_egg_clicks')) || 0;
-const EGG_TARGET_CLICKS = 50;
+let activeEggType = localStorage.getItem('petopia_active_egg_type') || 'common'; // Przechowuje typ aktywnego jajka
+let currentEggTarget = parseInt(localStorage.getItem('petopia_egg_target')) || 30;
 
 let activePetId = localStorage.getItem('petopia_active_pet') || 'slime';
 let userPets = JSON.parse(localStorage.getItem('petopia_user_pets')) || {
@@ -373,27 +383,26 @@ if (isEggActive) {
         eggClicks++;
         localStorage.setItem('petopia_egg_clicks', eggClicks);
         
+        const eggInfo = EGGS_DATABASE[activeEggType] || { targetClicks: 30 };
+
         if (clicksDisplay) {
-            clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${EGG_TARGET_CLICKS}</span>`;
+            clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${eggInfo.targetClicks}</span>`;
         }
 
         triggerHaptic('light');
         
-        let remainingEggClicks = EGG_TARGET_CLICKS - eggClicks;
-        
-        // Animacje i gumowy efekt przy każdym kliknięciu
+        let remainingEggClicks = eggInfo.targetClicks - eggClicks;
         animateClick();
 
         if (remainingEggClicks <= 5 && remainingEggClicks > 0) {
-            // Końcówka - dodatkowe mocne trzęsienie
             mainImg.classList.remove('egg-shake-intense');
             void mainImg.offsetWidth; 
             mainImg.classList.add('egg-shake-intense');
         }
 
-        if (eggClicks >= EGG_TARGET_CLICKS) {
+        if (eggClicks >= eggInfo.targetClicks) {
             mainImg.classList.remove('egg-shake-intense');
-            hatchShopEgg(); // Wywołujemy funkcję losującą nagrodę
+            hatchShopEgg(); 
         }
         return;
     }
@@ -457,31 +466,39 @@ if (isEggActive) {
 }
 
 // 9. SKLEP I JAJKA
-function buyCommonEgg() {
+nction buyEgg(eggType) {
+    const eggInfo = EGGS_DATABASE[eggType];
+    if (!eggInfo) return;
+
     if (isEggActive) {
         showToast("⚠️ You already have an egg to hatch!");
         switchTab('tab-home');
         return;
     }
 
-    if (coins < EGG_PRICE) {
-        showToast(`❌ Not enough coins! Need ${EGG_PRICE} ${COIN_ICON}`);
+    if (coins < eggInfo.price) {
+        showToast(`❌ Not enough coins! Need ${eggInfo.price} ${COIN_ICON}`);
         return;
     }
 
-    coins -= EGG_PRICE;
+    coins -= eggInfo.price;
     localStorage.setItem('petopia_coins', coins);
     updateCoinsUI();
 
     isEggActive = true;
     eggClicks = 0;
+    activeEggType = eggType;
+    currentEggTarget = eggInfo.targetClicks;
+
     localStorage.setItem('petopia_is_egg_active', 'true');
     localStorage.setItem('petopia_egg_clicks', '0');
+    localStorage.setItem('petopia_active_egg_type', activeEggType);
+    localStorage.setItem('petopia_egg_target', currentEggTarget);
 
     showEggInMainArea();
     switchTab('tab-home');
     triggerHaptic('light');
-    showToast("🥚 Egg purchased!");
+    showToast(`🥚 ${eggInfo.name} purchased!`);
 }
 
 function hatchShopEgg() {
@@ -490,20 +507,21 @@ function hatchShopEgg() {
     localStorage.setItem('petopia_is_egg_active', 'false');
     localStorage.setItem('petopia_egg_clicks', '0');
 
+    // Możemy dostosować dropy w zależności od activeEggType
     const shopPets = ['turtle', 'cat', 'owl'];
     const randomPetId = shopPets[Math.floor(Math.random() * shopPets.length)];
-    const petData = PETS_DATABASE[randomPetId];
-
+    
+    // Logika dodawania zwierzaka/shardów (tak jak miała w oryginale)
     if (!userPets[randomPetId]) {
         userPets[randomPetId] = { level: 1, shards: 0, unlocked: true };
     } else {
         const userPet = userPets[randomPetId];
         if (userPet.level >= 3) {
-            coins += 50;
+            coins += 100; // zwrot monet za duplikat
             localStorage.setItem('petopia_coins', coins);
             updateCoinsUI();
         } else {
-            userPet.shards += 1;
+            userPet.shards += (activeEggType === 'legendary' ? 3 : (activeEggType === 'epic' ? 2 : 1));
             const requiredShards = userPet.level === 1 ? 3 : 5;
 
             if (userPet.shards >= requiredShards) {
@@ -514,8 +532,6 @@ function hatchShopEgg() {
     }
 
     localStorage.setItem('petopia_user_pets', JSON.stringify(userPets));
-
-    // Otwieramy nowy modal z animacją wyklucia zwierzaka
     triggerHatchAnimation(randomPetId);
 }
 
@@ -574,12 +590,14 @@ function claimMissionReward(missionId, rewardCoins) {
 
 // 11. WIDOK GŁÓWNY
 function showEggInMainArea() {
-    if (mainImg) mainImg.src = 'img/eggs/egg.png';
-    if (statusSubtitle) statusSubtitle.innerText = 'Tap to hatch your Common Egg!';
+    const eggInfo = EGGS_DATABASE[activeEggType] || { name: 'Egg', img: `img/eggs/egg_${activeEggType}.png`, targetClicks: 30 };
+    
+    if (mainImg) mainImg.src = eggInfo.img;
+    if (statusSubtitle) statusSubtitle.innerText = `Tap to hatch your ${eggInfo.name}!`;
     if (counterLabel) counterLabel.innerText = 'HATCHING PROGRESS';
     
     if (clicksDisplay) {
-        clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${EGG_TARGET_CLICKS}</span>`;
+        clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${eggInfo.targetClicks}</span>`;
     }
 }
 
