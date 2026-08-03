@@ -718,7 +718,7 @@ function renderCollection() {
 
         if (petId === 'slime') {
             statusHTML = `<span class="badge-max">${isUnlocked ? 'MAX LEVEL' : 'Locked'}</span>`;
-            const idlePerSec = isUnlocked ? (1 * 0.2).toFixed(1) : '0.0';
+            const idlePerSec = isUnlocked ? (1 * 0.03).toFixed(1) : '0.0';
             idleRateHTML = `<div class="pet-idle-rate" style="font-size: 0.8em; color: ${isUnlocked ? '#ffd700' : 'inherit'}; opacity: ${isUnlocked ? '1' : '0.4'}; margin: 4px 0;">💤 +${idlePerSec} ${COIN_ICON}/s</div>`;
         } else if (isUnlocked) {
             const reqShards = userData.level === 1 ? 3 : 5;
