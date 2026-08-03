@@ -218,16 +218,22 @@ function initGame() {
     updateEnergyUI();
     updateUpgradesUI();
 
-    if (isEggActive) {
+    // Sprawdzamy czy to zupełnie nowe konto (brak zwierzaka, brak aktywnego jajka ze sklepu i nieukończony tutorial)
+    if (!hasPet && !isEggActive && !isHatched) {
+        // Ustawiamy domyślne jajko startowe
+        if (mainImg) mainImg.src = 'img/eggs/egg_starter.png'; // Tutaj wpisz dokładną nazwę swojego pliku startowego
+        if (statusSubtitle) statusSubtitle.innerText = 'Tap to hatch your Starter Pet!';
+        if (counterLabel) counterLabel.innerText = 'HATCHING PROGRESS';
+        
+        if (clicksDisplay) {
+            clicksDisplay.innerHTML = `${clicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${TUTORIAL_TARGET}</span>`;
+        }
+    } else if (isEggActive) {
         showEggInMainArea();
     } else if (hasPet) {
         showActivePetInMainArea();
     } else if (isHatched) {
         showStarterReward();
-    } else {
-        if (clicksDisplay) {
-            clicksDisplay.innerHTML = `${clicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${TUTORIAL_TARGET}</span>`;
-        }
     }
 
     updateMissionsUI();
@@ -590,14 +596,26 @@ function claimMissionReward(missionId, rewardCoins) {
 
 // 11. WIDOK GŁÓWNY
 function showEggInMainArea() {
-    const eggInfo = EGGS_DATABASE[activeEggType] || { name: 'Egg', img: `img/eggs/egg_${activeEggType}.png`, targetClicks: 30 };
+    const eggInfo = EGGS_DATABASE[activeEggType];
     
-    if (mainImg) mainImg.src = eggInfo.img;
-    if (statusSubtitle) statusSubtitle.innerText = `Tap to hatch your ${eggInfo.name}!`;
-    if (counterLabel) counterLabel.innerText = 'HATCHING PROGRESS';
-    
-    if (clicksDisplay) {
-        clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${eggInfo.targetClicks}</span>`;
+    if (eggInfo) {
+        // Jajko kupione w sklepie
+        if (mainImg) mainImg.src = eggInfo.img;
+        if (statusSubtitle) statusSubtitle.innerText = `Tap to hatch your ${eggInfo.name}!`;
+        if (counterLabel) counterLabel.innerText = 'HATCHING PROGRESS';
+        
+        if (clicksDisplay) {
+            clicksDisplay.innerHTML = `${eggClicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${eggInfo.targetClicks}</span>`;
+        }
+    } else {
+        // Jajko startowe (gdyby activeEggType było puste lub równe 'starter')
+        if (mainImg) mainImg.src = 'img/eggs/egg_starter.png';
+        if (statusSubtitle) statusSubtitle.innerText = 'Tap to hatch your Starter Pet!';
+        if (counterLabel) counterLabel.innerText = 'HATCHING PROGRESS';
+        
+        if (clicksDisplay) {
+            clicksDisplay.innerHTML = `${clicks} <span style="font-size: 0.8em; opacity: 0.6;">/ ${TUTORIAL_TARGET}</span>`;
+        }
     }
 }
 
