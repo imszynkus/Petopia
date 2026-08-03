@@ -281,7 +281,7 @@ function calculatePassiveIncomeRate() {
         if (userData && userData.unlocked) {
             let clickPowerForPet = (petId === 'slime') ? 1 : Math.pow(2, userData.level);
             // Każdy odblokowany zwierzak daje pasywnie 20% swojej mocy kliknięcia na sekundę
-            totalRatePerSecond += clickPowerForPet * 0.2;
+            totalRatePerSecond += clickPowerForPet * 0.03;
         }
     });
     
