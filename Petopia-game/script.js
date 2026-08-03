@@ -726,7 +726,7 @@ function renderCollection() {
             statusHTML = `<div class="pet-level">Lvl ${userData.level}</div><div class="pet-shards">${shardText}</div>`;
             
             const clickPower = Math.pow(2, userData.level);
-            const idlePerSec = (clickPower * 0.2).toFixed(1);
+            const idlePerSec = (clickPower * 0.03).toFixed(1);
             idleRateHTML = `<div class="pet-idle-rate" style="font-size: 0.8em; color: #ffd700; margin: 4px 0;">💤 +${idlePerSec} ${COIN_ICON}/s</div>`;
         } else {
             statusHTML = `<div class="pet-locked-text">Locked</div>`;
