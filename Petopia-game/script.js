@@ -762,32 +762,59 @@ window.equipPet = function(petId) {
 };
 
 // 13. ULEPSZENIA
+const MAX_ENERGY_LEVEL = 10;  // Max 10 ulepszeń energii (10 * 200 = +2000 max energii, czyli łącznie 3000)
+const MAX_REGEN_LEVEL = 4;    // Max 4 ulepszenia regeneracji (max 5 ⚡/sekundę)
+
 function getMaxEnergyCost() {
     const level = (maxEnergy - 1000) / 200;
-    return Math.floor(150 * Math.pow(1.8, level));
+    return Math.floor(300 * Math.pow(2.7, level));
 }
 
 function getRegenSpeedCost() {
     const level = energyRechargeRate - 1;
-    return Math.floor(200 * Math.pow(2.2, level));
+    return Math.floor(1000 * Math.pow(2.8, level));
 }
 
 function updateUpgradesUI() {
-    const maxEnergyCost = getMaxEnergyCost();
-    const regenCost = getRegenSpeedCost();
+    const maxEnergyLevel = (maxEnergy - 1000) / 200;
+    const regenLevel = energyRechargeRate - 1;
 
     const costMaxEl = document.getElementById('cost-max-energy');
     const statsMaxEl = document.getElementById('upgrade-max-energy-stats');
-    if (costMaxEl) costMaxEl.innerText = maxEnergyCost;
-    if (statsMaxEl) statsMaxEl.innerText = `+200 ⚡ (Current: ${maxEnergy})`;
+    const buyMaxBtn = document.getElementById('buy-max-energy-btn');
+
+    if (maxEnergyLevel >= MAX_ENERGY_LEVEL) {
+        if (costMaxEl) costMaxEl.innerText = "MAX";
+        if (statsMaxEl) statsMaxEl.innerText = `+200 ⚡ (Current: ${maxEnergy}) [MAX]`;
+        if (buyMaxBtn) buyMaxBtn.classList.add('disabled');
+    } else {
+        if (costMaxEl) costMaxEl.innerText = getMaxEnergyCost();
+        if (statsMaxEl) statsMaxEl.innerText = `+200 ⚡ (Current: ${maxEnergy}) [Level ${maxEnergyLevel}/${MAX_ENERGY_LEVEL}]`;
+        if (buyMaxBtn) buyMaxBtn.classList.remove('disabled');
+    }
 
     const costRegenEl = document.getElementById('cost-regen-speed');
     const statsRegenEl = document.getElementById('upgrade-regen-rate-stats');
-    if (costRegenEl) costRegenEl.innerText = regenCost;
-    if (statsRegenEl) statsRegenEl.innerText = `+1 ⚡/s (Current: ${energyRechargeRate}/s)`;
+    const buyRegenBtn = document.getElementById('buy-regen-speed-btn');
+
+    if (regenLevel >= MAX_REGEN_LEVEL) {
+        if (costRegenEl) costRegenEl.innerText = "MAX";
+        if (statsRegenEl) statsRegenEl.innerText = `+1 ⚡/s (Current: ${energyRechargeRate}/s) [MAX]`;
+        if (buyRegenBtn) buyRegenBtn.classList.add('disabled');
+    } else {
+        if (costRegenEl) costRegenEl.innerText = getRegenSpeedCost();
+        if (statsRegenEl) statsRegenEl.innerText = `+1 ⚡/s (Current: ${energyRechargeRate}/s) [Level ${regenLevel}/${MAX_REGEN_LEVEL}]`;
+        if (buyRegenBtn) buyRegenBtn.classList.remove('disabled');
+    }
 }
 
 function buyMaxEnergyUpgrade() {
+    const currentLevel = (maxEnergy - 1000) / 200;
+    if (currentLevel >= MAX_ENERGY_LEVEL) {
+        showToast("⚠️ Max Energy is already at maximum level!");
+        return;
+    }
+
     const cost = getMaxEnergyCost();
     if (coins < cost) {
         showToast(`❌ Need ${cost} ${COIN_ICON}`);
@@ -810,6 +837,12 @@ function buyMaxEnergyUpgrade() {
 }
 
 function buyRegenSpeedUpgrade() {
+    const currentLevel = energyRechargeRate - 1;
+    if (currentLevel >= MAX_REGEN_LEVEL) {
+        showToast("⚠️ Recharge Rate is already at maximum level!");
+        return;
+    }
+
     const cost = getRegenSpeedCost();
     if (coins < cost) {
         showToast(`❌ Need ${cost} ${COIN_ICON}`);
