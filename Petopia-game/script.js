@@ -466,7 +466,7 @@ if (isEggActive) {
 }
 
 // 9. SKLEP I JAJKA
-nction buyEgg(eggType) {
+function buyEgg(eggType) {
     const eggInfo = EGGS_DATABASE[eggType];
     if (!eggInfo) return;
 
