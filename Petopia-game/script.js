@@ -542,12 +542,22 @@ function hatchShopEgg() {
 }
 
 // 10. MISJE
+let missionProgress = JSON.parse(localStorage.getItem('petopia_missionProgress')) || {
+    m1: { completed: false },
+    m2: { level: 0 } // Poziom gwiazdek dla Tap Master (0-5)
+};
+
+const tapThresholds = [50, 500, 2500, 15000, 50000];
+const tapRewards = [100, 500, 2000, 10000, 50000]; // Nagrody monetarne dla kolejnych poziomów
+
 function updateMissionsUI() {
     const m1Btn = document.getElementById('m1-btn');
     const m2Btn = document.getElementById('m2-btn');
+    const m2Stars = document.getElementById('m2-stars'); // Kontener na gwiazdki w HTML (opcjonalnie)
 
+    // --- MISJA 1: First Steps ---
     if (m1Btn) {
-        if (completedMissions.includes(1)) {
+        if (missionProgress.m1.completed) {
             m1Btn.innerText = "DONE ✅";
             m1Btn.className = "claim-mission-btn disabled";
             m1Btn.onclick = null;
@@ -562,31 +572,45 @@ function updateMissionsUI() {
         }
     }
 
+    // --- MISJA 2: Tap Master (Wielopoziomowa) ---
     if (m2Btn) {
-        if (completedMissions.includes(2)) {
+        let currentLevel = missionProgress.m2.level;
+
+        // Aktualizacja wizualna gwiazdek, jeśli masz taki element w HTML
+        if (m2Stars) {
+            m2Stars.innerText = '★'.repeat(currentLevel) + '☆'.repeat(5 - currentLevel);
+        }
+
+        if (currentLevel >= 5) {
             m2Btn.innerText = "DONE ✅";
             m2Btn.className = "claim-mission-btn disabled";
             m2Btn.onclick = null;
-        } else if (clicks >= 50) {
-            m2Btn.innerText = "CLAIM";
-            m2Btn.className = "claim-mission-btn";
-            m2Btn.onclick = () => claimMissionReward(2, 100);
         } else {
-            m2Btn.innerText = `${clicks} / 50`;
-            m2Btn.className = "claim-mission-btn disabled";
-            m2Btn.onclick = null;
+            let nextTarget = tapThresholds[currentLevel];
+            
+            if (clicks >= nextTarget) {
+                m2Btn.innerText = "CLAIM";
+                m2Btn.className = "claim-mission-btn";
+                m2Btn.onclick = () => claimTapMasterReward();
+            } else {
+                m2Btn.innerText = `${clicks} / ${nextTarget}`;
+                m2Btn.className = "claim-mission-btn disabled";
+                m2Btn.onclick = null;
+            }
         }
     }
 }
 
 function claimMissionReward(missionId, rewardCoins) {
-    if (completedMissions.includes(missionId)) return;
+    if (missionId === 1) {
+        if (missionProgress.m1.completed) return;
+        missionProgress.m1.completed = true;
+    }
 
     coins += rewardCoins;
-    completedMissions.push(missionId);
-
+    
     localStorage.setItem('petopia_coins', coins);
-    localStorage.setItem('petopia_missions', JSON.stringify(completedMissions));
+    localStorage.setItem('petopia_missionProgress', JSON.stringify(missionProgress));
 
     updateCoinsUI();
     updateMissionsUI();
@@ -594,6 +618,23 @@ function claimMissionReward(missionId, rewardCoins) {
     showToast(`🎉 Mission completed! +${rewardCoins} ${COIN_ICON}`);
 }
 
+function claimTapMasterReward() {
+    let currentLevel = missionProgress.m2.level;
+    if (currentLevel >= 5) return;
+
+    let rewardCoins = tapRewards[currentLevel];
+    
+    coins += rewardCoins;
+    missionProgress.m2.level += 1;
+
+    localStorage.setItem('petopia_coins', coins);
+    localStorage.setItem('petopia_missionProgress', JSON.stringify(missionProgress));
+
+    updateCoinsUI();
+    updateMissionsUI();
+    triggerHaptic('success');
+    showToast(`⭐ Tap Master Level ${missionProgress.m2.level} Completed! +${rewardCoins} ${COIN_ICON}`);
+}
 // 11. WIDOK GŁÓWNY
 function showEggInMainArea() {
     const eggInfo = EGGS_DATABASE[activeEggType];
